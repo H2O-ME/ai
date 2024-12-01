@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI对话助手</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <button class="new-chat-btn">
+                <i class="fas fa-plus"></i>
+                新建对话
+            </button>
+            <div class="chat-history-list">
+                <!-- 历史对话列表将通过JS动态添加 -->
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="top-nav">
+                <div class="model-selector">
+                    <button class="model-btn active" data-model="gpt">GPT</button>
+                    <button class="model-btn" data-model="zhipu">智谱AI</button>
+                </div>
+                <div class="gpt-model-selector" style="display: none;">
+                    <select id="gptModelSelect">
+                        <optgroup label="GPT-4">
+                            <option value="gpt-4o-mini-2024-07-18">GPT-4 Mini (最新)</option>
+                            <option value="gpt-4o-mini">GPT-4 Mini</option>
+                        </optgroup>
+                        <optgroup label="GPT-3.5">
+                            <option value="gpt-3.5-turbo-1106">GPT-3.5 Turbo (最新)</option>
+                            <option value="gpt-3.5-turbo-0613">GPT-3.5 Turbo (0613)</option>
+                            <option value="gpt-3.5-turbo-0301">GPT-3.5 Turbo (0301)</option>
+                            <option value="gpt-3.5">GPT-3.5</option>
+                        </optgroup>
+                    </select>
+                </div>
+            </div>
+
+            <div class="chat-container">
+                <div class="chat-messages" id="chatHistory">
+                    <!-- 欢迎界面将通过JavaScript动态添加 -->
+                </div>
+
+                <div class="input-area">
+                    <textarea 
+                        id="userInput" 
+                        placeholder="请输入您的问题..."
+                        rows="1"
+                    ></textarea>
+                    <button id="sendBtn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+
+                <div class="disclaimer">
+                    服务生成的内容均由人工智能模型生成，服务生成内容的准确性和完整性无法保证，不代表我们的态度或观点
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html> 
