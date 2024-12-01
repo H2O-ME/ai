@@ -682,6 +682,7 @@ code {
 .gpt-model-selector {
     margin-left: 20px;
     position: relative;
+    display: none;  /* 默认隐藏 */
 }
 
 .gpt-model-selector select {
@@ -721,5 +722,5 @@ code {
 
 /* 当选择GPT模型时显示模型选择器 */
 .model-btn[data-model="gpt"].active ~ .gpt-model-selector {
-    display: block !important;
+    display: block;
 }
