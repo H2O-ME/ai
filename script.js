@@ -29,18 +29,8 @@ class AIChatApp {
             baseUrl: 'https://api.chatanywhere.tech/v1/chat/completions',
             model: 'gpt-3.5-turbo-1106',
             models: {
-                'gpt-4o-2024-05-13': {
-                    name: 'GPT-4 Turbo',
-                    maxTokens: 128000,
-                    supportImage: true
-                },
-                'gpt-4o': {
-                    name: 'GPT-4',
-                    maxTokens: 8192,
-                    supportImage: false
-                },
                 'gpt-4o-mini-2024-07-18': {
-                    name: 'GPT-4 Mini',
+                    name: 'GPT-4 Mini (最新)',
                     maxTokens: 8192,
                     supportImage: false
                 },
@@ -49,6 +39,7 @@ class AIChatApp {
                     maxTokens: 8192,
                     supportImage: false
                 },
+                
                 'gpt-3.5-turbo-1106': {
                     name: 'GPT-3.5 Turbo (最新)',
                     maxTokens: 16385,
@@ -119,6 +110,14 @@ class AIChatApp {
             baseUrl: 'https://api.chatanywhere.tech/v1/chat/completions',
             model: 'gpt-3.5-turbo-1106'
         };
+
+        // 初始化完成后，如果当前是GPT模型，显示模型选择器
+        if (this.currentModel === 'gpt') {
+            const gptModelSelector = document.querySelector('.gpt-model-selector');
+            if (gptModelSelector) {
+                gptModelSelector.style.display = 'block';
+            }
+        }
     }
 
     initializeElements() {
@@ -222,7 +221,7 @@ class AIChatApp {
             });
         });
 
-        // 添加新建对话按钮事件
+        // 添加对话按钮事件
         document.querySelector('.new-chat-btn').addEventListener('click', () => {
             this.createNewChat();
         });
@@ -236,41 +235,47 @@ class AIChatApp {
         });
     }
 
-    switchModel(model) {
-        // 保存当前话
+    switchModel(model, createNew = true) {
+        // 保存当前对话
         if (this.currentChatId) {
             this.saveCurrentChat();
         }
 
         // 切换模型
         this.currentModel = model;
+        
+        // 更新UI
         this.modelBtns.forEach(btn => {
             btn.classList.toggle('active', btn.dataset.model === model);
         });
 
-        // 检查是否有最近的对话
-        const histories = Array.from(this.chatHistories[this.currentModel].entries())
-            .sort(([, a], [, b]) => b.timestamp - a.timestamp);
-
-        if (histories.length > 0) {
-            // 加载最近的对话
-            const [recentChatId] = histories[0];
-            this.loadChat(recentChatId);
-        } else {
-            // 如果没有历史对话，创建新对话
-            this.currentChatId = null;
-            this.conversationHistory = [];
-            this.createNewChat(true);
-        }
-
-        // 更新模型选择器显示状态
+        // 更新GPT模型选择器显示状态
         const gptModelSelector = document.querySelector('.gpt-model-selector');
         if (gptModelSelector) {
             gptModelSelector.style.display = model === 'gpt' ? 'block' : 'none';
         }
-        
+
         // 更新文件上传按钮状态
         this.updateFileUploadButton();
+
+        // 清空当前对话ID和历史
+        this.currentChatId = null;
+        this.conversationHistory = [];
+
+        if (createNew) {
+            // 获取当前模型的最新对话
+            const histories = Array.from(this.chatHistories[model].entries())
+                .filter(([, chat]) => chat.model === model)  // 只获取当前模型的对话
+                .sort(([, a], [, b]) => b.timestamp - a.timestamp);
+
+            if (histories.length > 0) {
+                // 加载最新的对话
+                this.loadChat(histories[0][0]);
+            } else {
+                // 创建新对话
+                this.createNewChat(true);
+            }
+        }
     }
 
     setupFileUpload() {
@@ -348,7 +353,7 @@ class AIChatApp {
             // 显示上传的视频
             this.addVideoMessage('user', base64Video);
 
-            // 构建消息���象
+            // 构建消息对
             const message = {
                 role: "user",
                 content: [
@@ -932,8 +937,9 @@ class AIChatApp {
         const historyList = document.querySelector('.chat-history-list');
         historyList.innerHTML = '';
 
-        // 获取当前模型的历史记录
+        // 只获取当前模型的历史记录
         const histories = Array.from(this.chatHistories[this.currentModel].entries())
+            .filter(([, chat]) => chat.model === this.currentModel)  // 确保只显示当前模型的对话
             .sort(([, a], [, b]) => b.timestamp - a.timestamp);
 
         if (histories.length === 0) {
@@ -985,7 +991,7 @@ class AIChatApp {
     }
 
     saveCurrentChat() {
-        if (!this.currentChatId) return;
+        if (!this.currentChatId || !this.currentModel) return;
 
         // 获取第一条非系统消息作为标题
         let title = '新对话';
@@ -1002,16 +1008,23 @@ class AIChatApp {
             }
         }
 
-        // 保存到当前模型的历史记录中
-        this.chatHistories[this.currentModel].set(this.currentChatId, {
+        // 创建对话数据
+        const chatData = {
+            id: this.currentChatId,
             title,
             timestamp: Date.now(),
             messages: messages.map(el => el.outerHTML),
             conversationHistory: this.conversationHistory,
             model: this.currentModel
-        });
+        };
 
+        // 严格保存到当前模型的历史记录中
+        this.chatHistories[this.currentModel].set(this.currentChatId, chatData);
+        
+        // 保存到localStorage
         this.saveChatHistories();
+        
+        // 更新UI
         this.updateHistoryList();
     }
 
@@ -1021,15 +1034,22 @@ class AIChatApp {
             this.saveCurrentChat();
         }
 
-        const chat = this.chatHistories[this.currentModel].get(chatId);
-        if (!chat) return;
+        // 只在当前模型的历史记录中查找
+        const chatData = this.chatHistories[this.currentModel].get(chatId);
+        if (!chatData) return;
+
+        // 确保对话属于当前模型
+        if (chatData.model !== this.currentModel) {
+            console.warn('对话模型不匹配，跳过加载');
+            return;
+        }
 
         // 加载对话
         this.currentChatId = chatId;
-        this.chatHistory.innerHTML = chat.messages.join('');
-        this.conversationHistory = chat.conversationHistory;
+        this.chatHistory.innerHTML = chatData.messages.join('');
+        this.conversationHistory = chatData.conversationHistory;
 
-        // 重新定建议按钮事件
+        // 重新绑定建议按钮事件
         this.bindSuggestionButtons();
 
         // 更新UI
@@ -1037,16 +1057,14 @@ class AIChatApp {
     }
 
     deleteChat(chatId) {
-        // 确保从正确的模型历史记录中删除
-        if (this.chatHistories[this.currentModel]) {
-            this.chatHistories[this.currentModel].delete(chatId);
-            this.saveChatHistories();
-            this.updateHistoryList();
+        // 从当前模型的历史记录中删除
+        this.chatHistories[this.currentModel].delete(chatId);
+        this.saveChatHistories();
+        this.updateHistoryList();
 
-            // 如果删除的是当前对话，创建新对话
-            if (chatId === this.currentChatId) {
-                this.createNewChat(true);
-            }
+        // 如果删除的是当前对话，创建新对话
+        if (chatId === this.currentChatId) {
+            this.createNewChat(true);
         }
     }
 
