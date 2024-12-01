@@ -1,7 +1,7 @@
 class AIChatApp {
     constructor() {
         // 初始化基础配置
-        this.currentModel = 'gpt';  // 默认模型
+        this.currentModel = 'zhipu';  // 默认模型
         this.conversationHistory = [];
         this.chatHistories = {
             gpt: new Map(),
@@ -69,7 +69,7 @@ class AIChatApp {
 
     initializeConfigs() {
         // 基础配置
-        this.currentModel = 'gpt';
+        this.currentModel = 'zhipu';
         
         // API配置
         this.zhipuConfig = {
@@ -164,6 +164,27 @@ class AIChatApp {
         this.chatHistory.innerHTML = '';
         this.conversationHistory = [];
         
+        // 根据不同模型显示不同的欢迎界面
+        const welcomeContent = this.currentModel === 'gpt' ? {
+            title: 'ChatGPT',
+            description: '基于OpenAI的GPT模型',
+            suggestions: [
+                '你好，请做个自我介绍',
+                '帮我写一段Python代码',
+                '解释一下量子力学',
+                '写一篇短文章'
+            ]
+        } : {
+            title: 'AI对话助手',
+            description: '基于智谱AI的GLM大模型',
+            suggestions: [
+                '你好，请做个自我介绍',
+                '帮我分析一段代码',
+                '解释一个概念',
+                '分析一个问题'
+            ]
+        };
+        
         // 创建欢迎界面
         const welcomeSection = document.createElement('div');
         welcomeSection.className = 'welcome-section';
@@ -171,13 +192,12 @@ class AIChatApp {
             <div class="ai-avatar">
                 <img src="${this.avatars.ai[this.currentModel]}" alt="AI头像">
             </div>
-            <h2>AI对话助手</h2>
-            <p>选择模型开始对话</p>
+            <h2>${welcomeContent.title}</h2>
+            <p>${welcomeContent.description}</p>
             <div class="suggestion-grid">
-                <button class="suggestion-btn">你好，请做个自我介绍</button>
-                <button class="suggestion-btn">帮我写一段代码</button>
-                <button class="suggestion-btn">解释一个概念</button>
-                <button class="suggestion-btn">分析一个问题</button>
+                ${welcomeContent.suggestions.map(text => 
+                    `<button class="suggestion-btn">${text}</button>`
+                ).join('')}
             </div>
         `;
         
