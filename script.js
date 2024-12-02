@@ -1,5 +1,14 @@
 class AIChatApp {
     constructor() {
+        // 添加全局错误处理
+        window.addEventListener('error', (event) => {
+            // 忽略扩展程序相关的错误
+            if (event.message.includes('Receiving end does not exist')) {
+                event.preventDefault();
+                return;
+            }
+        });
+
         // 初始化基础配置
         this.currentModel = 'zhipu';  // 默认模型
         this.conversationHistory = [];
@@ -212,89 +221,123 @@ class AIChatApp {
             this.userInput.style.height = 'auto';
         }
 
-        // 更新历史列表
+        // 更新史列表
         this.updateHistoryList();
     }
 
     initializeEventListeners() {
-        // 发送消息事件
-        this.sendBtn.addEventListener('click', () => this.sendMessage());
-        this.userInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                this.sendMessage();
+        try {
+            // 发送消息事件
+            this.sendBtn.addEventListener('click', () => this.sendMessage());
+            this.userInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    this.sendMessage();
+                }
+            });
+
+            // 切换模型事件
+            this.modelBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    this.switchModel(e.target.dataset.model);
+                });
+            });
+
+            // 添加建议按钮点击事件
+            document.querySelectorAll('.suggestion-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    this.userInput.value = e.target.textContent;
+                    this.sendMessage();
+                });
+            });
+
+            // 添加对话按钮事件
+            document.querySelector('.new-chat-btn').addEventListener('click', () => {
+                this.createNewChat();
+            });
+        } catch (error) {
+            if (!error.message.includes('Receiving end does not exist')) {
+                console.error('事件监听器初始化失败:', error);
             }
-        });
-
-        // 切换模型事件
-        this.modelBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                this.switchModel(e.target.dataset.model);
-            });
-        });
-
-        // 添加建议按钮点击事件
-        document.querySelectorAll('.suggestion-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                this.userInput.value = e.target.textContent;
-                this.sendMessage();
-            });
-        });
-
-        // 添加对话按钮事件
-        document.querySelector('.new-chat-btn').addEventListener('click', () => {
-            this.createNewChat();
-        });
+        }
     }
 
     initializeTextarea() {
-        // 自动调整文本框高度
+        let resizeTimeout;
         this.userInput.addEventListener('input', () => {
-            this.userInput.style.height = 'auto';
-            this.userInput.style.height = this.userInput.scrollHeight + 'px';
+            // 清除之前的定时器
+            clearTimeout(resizeTimeout);
+            
+            // 设置新的定时器
+            resizeTimeout = setTimeout(() => {
+                this.userInput.style.height = 'auto';
+                this.userInput.style.height = this.userInput.scrollHeight + 'px';
+            }, 10);
         });
     }
 
     switchModel(model, createNew = true) {
-        // 保存当前对话
-        if (this.currentChatId) {
-            this.saveCurrentChat();
-        }
-
-        // 切换模型
-        this.currentModel = model;
-        
-        // 更新UI
-        this.modelBtns.forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.model === model);
-        });
-
-        // 更新GPT模型选择器显示状态
-        const gptModelSelector = document.querySelector('.gpt-model-selector');
-        if (gptModelSelector) {
-            gptModelSelector.style.display = model === 'gpt' ? 'block' : 'none';
-        }
-
-        // 更新文件上传按钮状态
-        this.updateFileUploadButton();
-
-        // 清空当前对话ID和历史
-        this.currentChatId = null;
-        this.conversationHistory = [];
-
-        if (createNew) {
-            // 获取当前模型的最新对话
-            const histories = Array.from(this.chatHistories[model].entries())
-                .filter(([, chat]) => chat.model === model)  // 只获取当前模型的对话
-                .sort(([, a], [, b]) => b.timestamp - a.timestamp);
-
-            if (histories.length > 0) {
-                // 加载最新的对话
-                this.loadChat(histories[0][0]);
-            } else {
-                // 创建新对话
-                this.createNewChat(true);
+        try {
+            // 确保 chatHistories 结构完整
+            if (!this.chatHistories) {
+                this.chatHistories = {
+                    gpt: new Map(),
+                    zhipu: new Map()
+                };
             }
+            
+            if (!this.chatHistories[model]) {
+                this.chatHistories[model] = new Map();
+            }
+
+            // 保存当前对话
+            if (this.currentChatId) {
+                this.saveCurrentChat();
+            }
+
+            // 切换模型
+            this.currentModel = model;
+            
+            // 更新UI
+            this.modelBtns.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.model === model);
+            });
+
+            // 更新GPT模型选择器显示状态
+            const gptModelSelector = document.querySelector('.gpt-model-selector');
+            if (gptModelSelector) {
+                gptModelSelector.style.display = model === 'gpt' ? 'block' : 'none';
+            }
+
+            // 更新文件上传按钮状态
+            this.updateFileUploadButton();
+
+            // 清空当前对话ID和历史
+            this.currentChatId = null;
+            this.conversationHistory = [];
+
+            if (createNew) {
+                // 获取当前模型的最新对话
+                const histories = Array.from(this.chatHistories[model].entries())
+                    .filter(([, chat]) => chat.model === model)
+                    .sort(([, a], [, b]) => b.timestamp - a.timestamp);
+
+                if (histories.length > 0) {
+                    // 加载最新的对话
+                    this.loadChat(histories[0][0]);
+                } else {
+                    // 创建新对话
+                    this.createNewChat(true);
+                }
+            }
+        } catch (error) {
+            console.error('切换模型失败:', error);
+            // 发生错误时重置到初始状态
+            this.chatHistories = {
+                gpt: new Map(),
+                zhipu: new Map()
+            };
+            this.createNewChat(true);
         }
     }
 
@@ -710,7 +753,7 @@ class AIChatApp {
             return fullContent;
         } catch (error) {
             console.error('智谱AI API调用错误:', error);
-            return '抱歉，服务器出现错误，请稍后再试。';
+            return '抱歉，服务器出现错误请稍后再试。';
         } finally {
             this.sendBtn.classList.remove('loading');
         }
@@ -879,6 +922,18 @@ class AIChatApp {
         video.controls = true;
         video.preload = 'metadata';  // 只加载视频元数据
         video.controlsList = 'nodownload';  // 禁止下载
+        video.muted = true;  // 添加静音属性
+        
+        // 添加错误处理
+        video.onerror = () => {
+            console.error('视频加载失败:', video.error);
+            this.addSystemMessage('视频加载失败，请重试');
+        };
+        
+        // 添加加载处理
+        video.onloadedmetadata = () => {
+            video.muted = false;  // 加载完成后取消静音
+        };
         
         messageContent.appendChild(video);
         messageDiv.appendChild(messageContent);
@@ -925,32 +980,45 @@ class AIChatApp {
 
     // 添加历史记录管理方法
     loadChatHistories() {
-        const savedHistories = localStorage.getItem('chatHistories');
-        if (savedHistories) {
-            try {
+        try {
+            const savedHistories = localStorage.getItem('chatHistories');
+            if (savedHistories) {
                 const histories = JSON.parse(savedHistories);
-                // 确保两个模型的Map都被正确初始化
+                // 确保两个模型的 Map 都被正确初始化
                 this.chatHistories = {
                     gpt: new Map(histories.gpt || []),
                     zhipu: new Map(histories.zhipu || [])
                 };
-                this.updateHistoryList();
-            } catch (error) {
-                console.error('加载历史记录失败:', error);
-                // 如果加载失败，初始化空的历史记录
+            } else {
+                // 如果没有保存的历史记录，初始化空的 Map
                 this.chatHistories = {
                     gpt: new Map(),
                     zhipu: new Map()
                 };
             }
+        } catch (error) {
+            console.error('加载历史记录失败:', error);
+            // 如果加载失败，初始化空的历史记录
+            this.chatHistories = {
+                gpt: new Map(),
+                zhipu: new Map()
+            };
         }
+        this.updateHistoryList();
     }
 
     saveChatHistories() {
-        localStorage.setItem('chatHistories', JSON.stringify({
-            gpt: Array.from(this.chatHistories.gpt.entries()),
-            zhipu: Array.from(this.chatHistories.zhipu.entries())
-        }));
+        try {
+            // 确保 chatHistories 的结构正确
+            const histories = {
+                gpt: Array.from(this.chatHistories.gpt?.entries() || []),
+                zhipu: Array.from(this.chatHistories.zhipu?.entries() || [])
+            };
+            
+            localStorage.setItem('chatHistories', JSON.stringify(histories));
+        } catch (error) {
+            console.error('保存历史记录失败:', error);
+        }
     }
 
     updateHistoryList() {
@@ -1011,41 +1079,62 @@ class AIChatApp {
     }
 
     saveCurrentChat() {
-        if (!this.currentChatId || !this.currentModel) return;
+        try {
+            if (!this.currentChatId || !this.currentModel) return;
 
-        // 获取第一条非系统消息作为标题
-        let title = '新对话';
-        const messages = Array.from(this.chatHistory.children);
-        for (const msg of messages) {
-            if (!msg.classList.contains('system-message') && 
-                !msg.classList.contains('welcome-section')) {
-                const content = msg.querySelector('.message-content');
-                if (content) {
-                    title = content.textContent.slice(0, 20) + 
-                           (content.textContent.length > 20 ? '...' : '');
-                    break;
+            // 确保 chatHistories 结构完整
+            if (!this.chatHistories) {
+                this.chatHistories = {
+                    gpt: new Map(),
+                    zhipu: new Map()
+                };
+            }
+
+            if (!this.chatHistories[this.currentModel]) {
+                this.chatHistories[this.currentModel] = new Map();
+            }
+
+            // 获取第一条非系统消息作为标题
+            let title = '新对话';
+            const messages = Array.from(this.chatHistory.children);
+            for (const msg of messages) {
+                if (!msg.classList.contains('system-message') && 
+                    !msg.classList.contains('welcome-section')) {
+                    const content = msg.querySelector('.message-content');
+                    if (content) {
+                        title = content.textContent.slice(0, 20) + 
+                               (content.textContent.length > 20 ? '...' : '');
+                        break;
+                    }
                 }
             }
+
+            // 创建对话数据
+            const chatData = {
+                id: this.currentChatId,
+                title,
+                timestamp: Date.now(),
+                messages: messages.map(el => el.outerHTML),
+                conversationHistory: this.conversationHistory,
+                model: this.currentModel
+            };
+
+            // 保存到当前模型的历史记录中
+            this.chatHistories[this.currentModel].set(this.currentChatId, chatData);
+            
+            // 保存到localStorage
+            this.saveChatHistories();
+            
+            // 更新UI
+            this.updateHistoryList();
+        } catch (error) {
+            console.error('保存当前对话失败:', error);
+            // 如果保存失败，确保基础结构完整
+            this.chatHistories = {
+                gpt: new Map(),
+                zhipu: new Map()
+            };
         }
-
-        // 创建对话数据
-        const chatData = {
-            id: this.currentChatId,
-            title,
-            timestamp: Date.now(),
-            messages: messages.map(el => el.outerHTML),
-            conversationHistory: this.conversationHistory,
-            model: this.currentModel
-        };
-
-        // 严格保存到当前模型的历史记录中
-        this.chatHistories[this.currentModel].set(this.currentChatId, chatData);
-        
-        // 保存到localStorage
-        this.saveChatHistories();
-        
-        // 更新UI
-        this.updateHistoryList();
     }
 
     loadChat(chatId) {
