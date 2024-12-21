@@ -59,27 +59,30 @@ body {
     justify-content: center;
     align-items: center;
     border-bottom: 1px solid #e5e7eb;
+    gap: 15px;
+    flex-wrap: wrap;
 }
 
 .model-selector {
     display: flex;
-    gap: 10px;
+    align-items: center;
 }
 
 .model-btn {
     padding: 8px 20px;
-    border: 1px solid #e5e7eb;
+    border: none;
     border-radius: 20px;
-    background-color: #fff;
+    background-color: transparent;
     cursor: pointer;
     font-size: 14px;
     transition: all 0.3s ease;
+    color: #666;
 }
 
 .model-btn.active {
-    background-color: #7b66ff;
-    color: white;
-    border-color: #7b66ff;
+    background-color: #fff;
+    color: #7b66ff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 /* 聊天区域 */
@@ -596,6 +599,10 @@ code {
     background-color: #7b66ff;
 }
 
+.model-tag.qwen {
+    background-color: #FF6B6B;
+}
+
 .chat-history-title span:last-child {
     font-size: 14px;
     color: #333;
@@ -686,6 +693,7 @@ code {
 }
 
 .gpt-model-selector select {
+    min-width: 200px;  /* 增加选择器宽度 */
     padding: 8px 16px;
     border: 1px solid #e5e7eb;
     border-radius: 20px;
@@ -696,7 +704,6 @@ code {
     appearance: none;
     -webkit-appearance: none;
     padding-right: 32px;
-    transition: all 0.3s ease;
 }
 
 .gpt-model-selector::after {
@@ -723,4 +730,313 @@ code {
 /* 当选择GPT模型时显示模型选择器 */
 .model-btn[data-model="gpt"].active ~ .gpt-model-selector {
     display: block;
+}
+
+/* 智谱AI模型选择器样式 */
+.zhipu-model-selector {
+    margin-left: 20px;
+    position: relative;
+    display: none;  /* 默认隐藏 */
+}
+
+.zhipu-model-selector select {
+    min-width: 200px;  /* 增加选择器宽度 */
+    padding: 8px 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    background-color: #fff;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 32px;
+}
+
+.zhipu-model-selector::after {
+    content: '▼';
+    font-size: 12px;
+    color: #666;
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+/* 当选择智谱AI模型时显示模型选择器 */
+.model-btn[data-model="zhipu"].active ~ .zhipu-model-selector {
+    display: block;
+}
+
+/* Qwen模型选择器样式 */
+.qwen-model-selector {
+    margin-left: 20px;
+    position: relative;
+    display: none;  /* 默认隐藏 */
+}
+
+.qwen-model-selector select {
+    min-width: 200px;
+    padding: 8px 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    background-color: #fff;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 32px;
+}
+
+.qwen-model-selector::after {
+    content: '▼';
+    font-size: 12px;
+    color: #666;
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+/* 当选择Qwen模型时显示模型选择器 */
+.model-btn[data-model="qwen"].active ~ .qwen-model-selector {
+    display: block;
+}
+
+/* Qwen特定样式 */
+.avatar img[src*="alicdn.com"] {
+    padding: 4px;
+    background-color: #fff;
+    border: 2px solid #FF6B6B;  /* 阿里云品牌色 */
+}
+
+.welcome-section .ai-avatar img[src*="alicdn.com"] {
+    padding: 8px;
+    background-color: #fff;
+    border: 3px solid #FF6B6B;
+}
+
+/* Qwen头像特定样式 */
+.avatar img[src*="Tongyi.svg"] {
+    padding: 4px;
+    background-color: #fff;
+    border: 2px solid #FF6B6B;  /* 通义千问的品牌色 */
+}
+
+.welcome-section .ai-avatar img[src*="Tongyi.svg"] {
+    padding: 8px;
+    background-color: #fff;
+    border: 3px solid #FF6B6B;
+}
+
+/* FLUX模型选择器样式 */
+.flux-model-selector {
+    margin-left: 20px;
+    position: relative;
+    display: none;
+}
+
+.flux-model-selector select {
+    min-width: 200px;
+    padding: 8px 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    background-color: #fff;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 32px;
+}
+
+.flux-model-selector::after {
+    content: '▼';
+    font-size: 12px;
+    color: #666;
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+/* 当选择FLUX模型时显示模型选择器 */
+.model-btn[data-model="flux"].active ~ .flux-model-selector {
+    display: block;
+}
+
+/* FLUX特定样式 */
+.model-tag.flux {
+    background-color: #4A90E2;  /* FLUX的品牌色 */
+}
+
+/* FLUX模型的建议按钮样式 */
+.flux .suggestion-grid .suggestion-btn {
+    background-color: #f0f7ff;
+    border-color: #4A90E2;
+    color: #4A90E2;
+}
+
+.flux .suggestion-grid .suggestion-btn:hover {
+    background-color: #e1f0ff;
+}
+
+/* FLUX头像特定样式 */
+.avatar img[src*="blackforestlabs.svg"] {
+    padding: 4px;
+    background-color: #fff;
+    border: 2px solid #4A90E2;  /* FLUX的品牌色 */
+}
+
+.welcome-section .ai-avatar img[src*="blackforestlabs.svg"] {
+    padding: 8px;
+    background-color: #fff;
+    border: 3px solid #4A90E2;
+}
+
+/* 图片生成进度条样式 */
+.image-generation-progress {
+    margin: 10px auto;
+    width: 80%;
+    max-width: 500px;
+    text-align: center;
+    padding: 10px;
+}
+
+.progress-bar {
+    height: 6px;
+    background-color: #f0f0f0;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 5px;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: #4A90E2;  /* FLUX的品牌色 */
+    width: 0;
+    transition: width 0.3s ease;
+    border-radius: 3px;
+    background-image: linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.15) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255, 255, 255, 0.15) 50%,
+        rgba(255, 255, 255, 0.15) 75%,
+        transparent 75%,
+        transparent
+    );
+    background-size: 1rem 1rem;
+    animation: progress-bar-stripes 1s linear infinite;
+}
+
+.progress-text {
+    font-size: 12px;
+    color: #666;
+}
+
+@keyframes progress-bar-stripes {
+    from {
+        background-position: 1rem 0;
+    }
+    to {
+        background-position: 0 0;
+    }
+}
+
+/* Stable Diffusion 相关样式 */
+.img2img-btn {
+    padding: 12px;
+    background-color: #6c5ce7;  /* SD的品牌色 */
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    height: 48px;
+    width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.img2img-btn:hover {
+    background-color: #5b4ccc;
+    transform: scale(1.05);
+}
+
+.model-tag.sd {
+    background-color: #6c5ce7;
+}
+
+/* SD头像特定样式 */
+.avatar img[src*="Stability.svg"] {
+    padding: 4px;
+    background-color: #fff;
+    border: 2px solid #6c5ce7;
+}
+
+.welcome-section .ai-avatar img[src*="Stability.svg"] {
+    padding: 8px;
+    background-color: #fff;
+    border: 3px solid #6c5ce7;
+}
+
+/* SD 特定样式 */
+.img2img-hint {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f3f0ff;
+    border: 1px solid #6c5ce7;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: #444;
+}
+
+.img2img-hint i {
+    color: #6c5ce7;
+    font-size: 20px;
+}
+
+/* SD 的建议按钮样式 */
+.welcome-section .suggestion-grid .suggestion-btn {
+    background-color: #f3f0ff;
+    border-color: #6c5ce7;
+    color: #6c5ce7;
+}
+
+.welcome-section .suggestion-grid .suggestion-btn:hover {
+    background-color: #e5e0ff;
+}
+
+/* 图生图按钮悬停提示 */
+.img2img-btn::before {
+    content: '请先输入提示词，再上传图片';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 12px;
+    background-color: #333;
+    color: white;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.img2img-btn:hover::before {
+    opacity: 1;
+    visibility: visible;
+    bottom: calc(100% + 10px);
 }

@@ -28,8 +28,11 @@
         <div class="main-content">
             <div class="top-nav">
                 <div class="model-selector">
-                    <button class="model-btn" data-model="gpt">GPT</button>
-                    <button class="model-btn active" data-model="zhipu">智谱AI</button>
+                    <button class="model-btn active" data-model="gpt">GPT</button>
+                    <button class="model-btn" data-model="zhipu">智谱AI</button>
+                    <button class="model-btn" data-model="qwen">Qwen</button>
+                    <button class="model-btn" data-model="flux">FLUX</button>
+                    <button class="model-btn" data-model="sd">Stable Diffusion</button>
                 </div>
                 <div class="gpt-model-selector" style="display: none;">
                     <select id="gptModelSelect">
@@ -43,6 +46,27 @@
                             <option value="gpt-3.5-turbo-0301">GPT-3.5 Turbo (0301)</option>
                             <option value="gpt-3.5">GPT-3.5</option>
                         </optgroup>
+                    </select>
+                </div>
+                <div class="zhipu-model-selector" style="display: none;">
+                    <select id="zhipuModelSelect">
+                        <option value="glm-4v">GLM-4V</option>
+                        <option value="THUDM/glm-4-9b-chat">GLM-4-9B-Chat</option>
+                    </select>
+                </div>
+                <div class="qwen-model-selector" style="display: none;">
+                    <select id="qwenModelSelect">
+                        <option value="Qwen/Qwen2.5-7B-Instruct">Qwen2.5-7B-Instruct</option>
+                    </select>
+                </div>
+                <div class="flux-model-selector" style="display: none;">
+                    <select id="fluxModelSelect">
+                        <option value="black-forest-labs/FLUX.1-schnell">FLUX.1-schnell</option>
+                    </select>
+                </div>
+                <div class="sd-model-selector" style="display: none;">
+                    <select id="sdModelSelect">
+                        <option value="stabilityai/stable-diffusion-2-1">Stable Diffusion v2-1</option>
                     </select>
                 </div>
             </div>
