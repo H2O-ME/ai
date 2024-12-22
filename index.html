@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI对话助手</title>
+    <title>清言</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
@@ -14,7 +14,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 </head>
 <body>
-    <div class="app-container">
+    <!-- 开屏页面 -->
+    <div class="splash-screen">
+        <div class="splash-content">
+            <h1>THW</h1>
+            <p>by cursor and github pages</p>
+        </div>
+    </div>
+
+    <div class="app-container" style="opacity: 0;">
         <div class="sidebar">
             <button class="new-chat-btn">
                 <i class="fas fa-plus"></i>
@@ -28,11 +36,12 @@
         <div class="main-content">
             <div class="top-nav">
                 <div class="model-selector">
-                    <button class="model-btn active" data-model="gpt">GPT</button>
+                    <button class="model-btn" data-model="gpt">GPT</button>
                     <button class="model-btn" data-model="zhipu">智谱AI</button>
                     <button class="model-btn" data-model="qwen">Qwen</button>
                     <button class="model-btn" data-model="flux">FLUX</button>
                     <button class="model-btn" data-model="sd">Stable Diffusion</button>
+                    <button class="model-btn" data-model="video">LTX-Video</button>
                 </div>
                 <div class="gpt-model-selector" style="display: none;">
                     <select id="gptModelSelect">
@@ -65,15 +74,33 @@
                     </select>
                 </div>
                 <div class="sd-model-selector" style="display: none;">
-                    <select id="sdModelSelect">
-                        <option value="stabilityai/stable-diffusion-2-1">Stable Diffusion v2-1</option>
+                    <div class="model-dropdown">
+                        <div class="selected-model">
+                            <span>Stable Diffusion v2.1</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="model-options">
+                            <div class="model-option" data-value="stabilityai/stable-diffusion-2-1">
+                                Stable Diffusion v2.1
+                                <span class="model-tag">图生图</span>
+                            </div>
+                            <div class="model-option" data-value="stabilityai/stable-diffusion-3-5-large">
+                                Stable Diffusion v3.5
+                                <span class="model-tag">仅生图</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-model-selector" style="display: none;">
+                    <select id="videoModelSelect">
+                        <option value="Lightricks/LTX-Video">LTX-Video</option>
                     </select>
                 </div>
             </div>
 
             <div class="chat-container">
                 <div class="chat-messages" id="chatHistory">
-                    <!-- 欢迎界面将通过JavaScript动态添加 -->
+                    <!-- 欢迎界面通过JavaScript动态添加 -->
                 </div>
 
                 <div class="input-area">
@@ -87,12 +114,30 @@
                     </button>
                 </div>
 
-                <div class="disclaimer">
-                    服务生成的内容均由人工智能模型生成，服务生成内容的准确性和完整性无法保证，不代表我们的态度或观点
+                <div class="author-info">
+                    <div class="author-content">
+                        <span>Built with <i class="fas fa-heart"></i> by THW using </span>
+                        <a href="https://cursor.sh" target="_blank" rel="noopener noreferrer">
+                            <img src="https://registry.npmmirror.com/@lobehub/icons-static-png/1.10.0/files/dark/cursor.png" alt="Cursor" class="cursor-logo">
+                            Cursor
+                        </a>
+                        <span>&</span>
+                        <a href="https://pages.github.com" target="_blank" rel="noopener noreferrer">
+                            <i class="fab fa-github"></i> Pages
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     <script src="script.js"></script>
+    <div class="image-viewer" style="display: none;">
+        <div class="image-viewer-content">
+            <img src="" alt="放大图片">
+            <button class="close-viewer">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
 </body>
 </html> 

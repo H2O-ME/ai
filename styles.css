@@ -160,6 +160,7 @@ body {
     align-items: flex-start;
     padding: 0 10%;
     gap: 12px;
+    max-width: 100%;
 }
 
 .user-message {
@@ -171,11 +172,15 @@ body {
 }
 
 .message-content {
-    max-width: calc(100% - 100px);
+    max-width: 70%;
     padding: 12px 16px;
     border-radius: 12px;
     font-size: 14px;
     line-height: 1.6;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+    background-color: #f9fafb;
 }
 
 .user-message .message-content {
@@ -266,15 +271,6 @@ textarea:focus {
     animation: loading-ring 1.5s ease-out infinite;
 }
 
-/* 免责声明 */
-.disclaimer {
-    padding: 10px 30px;
-    color: #999;
-    font-size: 12px;
-    text-align: center;
-    border-top: 1px solid #e5e7eb;
-}
-
 /* 在文件末尾添加 */
 .loading {
     display: inline-block;
@@ -324,10 +320,18 @@ textarea:focus {
 }
 
 .system-message {
-    text-align: center;
-    color: #666;
-    font-size: 12px;
+    justify-content: center;
     margin: 10px 0;
+    padding: 0 20%;
+}
+
+.system-message .message-content {
+    background-color: #f0f0f0;
+    color: #666;
+    text-align: center;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
 }
 
 .message-content img {
@@ -364,6 +368,9 @@ code {
     border-radius: 12px;
     font-size: 14px;
     line-height: 1.6;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
 }
 
 .message-content p {
@@ -580,27 +587,34 @@ code {
 }
 
 .model-tag {
-    display: inline-flex;
-    align-items: center;
-    padding: 2px 8px;
-    border-radius: 4px;
     font-size: 12px;
-    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 10px;
     color: white;
-    min-width: 60px;
-    justify-content: center;
+    margin-right: 8px;
 }
 
-.model-tag.gpt {
-    background-color: #10a37f;
-}
-
-.model-tag.zhipu {
+/* FLUX 模型标签样式 */
+.model-tag.flux {
     background-color: #7b66ff;
 }
 
-.model-tag.qwen {
-    background-color: #FF6B6B;
+/* 视频模型标签样式 */
+.model-tag.video {
+    background-color: #ff6b6b;  /* 使用醒目的红色 */
+}
+
+/* 历史记录中的元信息样式 */
+.chat-meta {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
+}
+
+.chat-time {
+    color: #999;
 }
 
 .chat-history-title span:last-child {
@@ -740,7 +754,7 @@ code {
 }
 
 .zhipu-model-selector select {
-    min-width: 200px;  /* 增加选择器宽度 */
+    min-width: 200px;  /* 增加选择器��度 */
     padding: 8px 16px;
     border: 1px solid #e5e7eb;
     border-radius: 20px;
@@ -769,7 +783,7 @@ code {
     display: block;
 }
 
-/* Qwen模型选择器样式 */
+/* Qwen型选择器样式 */
 .qwen-model-selector {
     margin-left: 20px;
     position: relative;
@@ -1019,7 +1033,7 @@ code {
 
 /* 图生图按钮悬停提示 */
 .img2img-btn::before {
-    content: '请先输入提示词，再上传图片';
+    content: '请输入提示词，再上传图片';
     position: absolute;
     bottom: 100%;
     left: 50%;
@@ -1039,4 +1053,902 @@ code {
     opacity: 1;
     visibility: visible;
     bottom: calc(100% + 10px);
+}
+
+/* SD 模型选择器样式 */
+.sd-model-selector {
+    margin-left: 20px;
+    position: relative;
+    display: none;
+}
+
+.model-dropdown {
+    position: relative;
+    width: 240px;
+}
+
+.selected-model {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+}
+
+.selected-model i {
+    font-size: 12px;
+    color: #666;
+    transition: transform 0.3s ease;
+}
+
+.model-dropdown:hover .selected-model i {
+    transform: rotate(180deg);
+}
+
+.model-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 8px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 100;
+}
+
+.model-dropdown:hover .model-options {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.model-option {
+    padding: 12px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background-color 0.3s ease;
+}
+
+.model-option:first-child {
+    border-radius: 12px 12px 0 0;
+}
+
+.model-option:last-child {
+    border-radius: 0 0 12px 12px;
+}
+
+.model-option:hover {
+    background-color: #f3f0ff;
+}
+
+.model-option .model-tag {
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background-color: #6c5ce7;
+    color: white;
+}
+
+.model-option[data-value*="3-5"] .model-tag {
+    background-color: #4834d4;
+}
+
+/* 视频模型选择器样式 */
+.video-model-selector {
+    margin-left: 20px;
+    position: relative;
+    display: none;
+}
+
+.video-model-selector select {
+    min-width: 200px;
+    padding: 8px 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    background-color: #fff;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 32px;
+}
+
+/* 视频生成进度条样式 */
+.video-generation-progress {
+    margin: 10px auto;
+    width: 80%;
+    max-width: 500px;
+    text-align: center;
+    padding: 10px;
+}
+
+/* 视频播放器样式 */
+.chat-video {
+    max-width: 100%;
+    max-height: 400px;
+    border-radius: 8px;
+    margin: 5px 0;
+}
+
+/* 调整代码块样式，防止溢出 */
+.message-content pre {
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* 调整代码块内的代码样式 */
+.message-content pre code {
+    display: block;
+    padding: 1em;
+    overflow-x: auto;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+}
+
+/* 调整图片大小，防止溢出 */
+.message-content img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* 调整表格样式，防止溢出 */
+.message-content table {
+    max-width: 100%;
+    overflow-x: auto;
+    display: block;
+    border-collapse: collapse;
+}
+
+/* 图生图和图转视频提示样式 */
+.img2img-hint,
+.img2video-hint {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f3f0ff;
+    border: 1px solid #6c5ce7;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: #444;
+}
+
+.img2img-hint i,
+.img2video-hint i {
+    color: #6c5ce7;
+    font-size: 20px;
+}
+
+/* 视频上传按钮样式 */
+.video-upload-btn {
+    padding: 12px;
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    height: 48px;
+    width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    margin-right: 8px;
+}
+
+.video-upload-btn:hover {
+    background-color: #ff5252;
+    transform: scale(1.05);
+}
+
+/* 模型标签样式 */
+.model-tag.gpt {
+    background-color: #10a37f;  /* OpenAI 的品牌色 */
+}
+
+.model-tag.zhipu {
+    background-color: #7b66ff;  /* 智谱AI 的品牌色 */
+}
+
+.model-tag.flux {
+    background-color: #7b66ff;  /* FLUX 的品牌色 */
+}
+
+.model-tag.video {
+    background-color: #ff6b6b;  /* 视频模型的品牌色 */
+}
+
+/* SD 模型标签样式 */
+.model-tag.sd {
+    background-color: #6c5ce7;  /* SD 的品牌色 */
+}
+
+/* 添加媒体查看器样式 */
+.media-viewer {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.media-viewer.active {
+    opacity: 1;
+}
+
+/* 添加图片和视频的点击提示 */
+.chat-image, .chat-video {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.chat-image:hover, .chat-video:hover {
+    transform: scale(1.02);
+}
+
+.chat-image::after, .chat-video::after {
+    content: '双击放大';
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.chat-image:hover::after, .chat-video:hover::after {
+    opacity: 1;
+}
+
+/* 图片查看器样式 */
+.image-viewer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.image-viewer.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.image-viewer-content {
+    position: relative;
+    max-width: 90%;
+    max-height: 90%;
+}
+
+.image-viewer-content img {
+    max-width: 100%;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.close-viewer {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 8px;
+    transition: transform 0.3s ease;
+}
+
+.close-viewer:hover {
+    transform: scale(1.1);
+}
+
+/* 添加图片悬停效果 */
+.chat-image {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.chat-image:hover {
+    transform: scale(1.02);
+}
+
+/* 移动端适配样式 */
+.mobile-device {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}
+
+/* 旋转提示界面 */
+#rotateScreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.rotate-content {
+    text-align: center;
+    padding: 20px;
+}
+
+.rotate-content i {
+    font-size: 48px;
+    color: #7b66ff;
+    animation: rotate 1.5s ease infinite;
+}
+
+.rotate-content p {
+    margin-top: 20px;
+    color: #666;
+    font-size: 16px;
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    50% {
+        transform: rotate(90deg);
+    }
+    100% {
+        transform: rotate(90deg);
+    }
+}
+
+/* 移动端横屏时的样式调整 */
+@media screen and (max-width: 896px) and (orientation: landscape) {
+    /* 调整整体布局 */
+    .app-container {
+        height: 100vh;
+        width: 100vw;
+        display: flex;
+    }
+
+    /* 调整侧边栏 */
+    .sidebar {
+        width: 180px;  /* 减小侧边栏宽度 */
+        min-width: 180px;
+        padding: 10px;  /* 减小内边距 */
+    }
+
+    .new-chat-btn {
+        padding: 8px;  /* 减小按钮大小 */
+        font-size: 12px;  /* 减小字体大小 */
+    }
+
+    /* 调整历史记录列表 */
+    .chat-history-list {
+        max-height: calc(100vh - 60px);
+    }
+
+    .chat-history-item {
+        padding: 8px 10px;
+        margin: 3px 0;
+    }
+
+    /* 调整顶部导航 */
+    .top-nav {
+        padding: 5px;
+        gap: 5px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .model-btn {
+        padding: 4px 8px;
+        font-size: 12px;
+    }
+
+    /* 调整模型选择器 */
+    .gpt-model-selector select,
+    .zhipu-model-selector select,
+    .qwen-model-selector select,
+    .flux-model-selector select,
+    .video-model-selector select {
+        min-width: 120px;
+        font-size: 12px;
+        padding: 4px 8px;
+    }
+
+    /* 调整聊天区域 */
+    .chat-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .chat-messages {
+        flex: 1;
+        padding: 10px 0;
+    }
+
+    .message {
+        padding: 0 10px;
+        margin-bottom: 10px;
+        gap: 8px;
+    }
+
+    .message-content {
+        max-width: calc(100% - 80px);  /* 考虑头像和间距 */
+        font-size: 13px;
+        padding: 8px 12px;
+    }
+
+    /* 调整头像大小 */
+    .avatar {
+        width: 30px;
+        height: 30px;
+    }
+
+    /* 调整图片大小 */
+    .chat-image {
+        max-width: 160px;
+        max-height: 160px;
+    }
+
+    /* 调整输入区域 */
+    .input-area {
+        padding: 8px 10px;
+        gap: 8px;
+    }
+
+    textarea {
+        font-size: 13px;
+        min-height: 36px;
+        padding: 8px 12px;
+    }
+
+    #sendBtn {
+        height: 36px;
+        width: 36px;
+        padding: 8px;
+    }
+
+    /* 调整模型下拉菜单 */
+    .model-dropdown {
+        width: 180px;
+    }
+
+    .selected-model {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+
+    .model-option {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    /* 调整图片查看器 */
+    .image-viewer-content {
+        max-width: 95%;
+        max-height: 95%;
+    }
+
+    .close-viewer {
+        top: -30px;
+        font-size: 20px;
+    }
+}
+
+/* 添加横屏锁定提示样式 */
+.rotate-content {
+    text-align: center;
+    padding: 20px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.rotate-content i {
+    font-size: 40px;
+    color: #7b66ff;
+    display: block;
+    margin-bottom: 15px;
+}
+
+.rotate-content p {
+    margin: 0;
+    color: #333;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+/* 优化动画效果 */
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+    50% {
+        transform: rotate(90deg) scale(1.1);
+    }
+    100% {
+        transform: rotate(90deg) scale(1);
+    }
+}
+
+/* 修改移动端横屏样式 */
+@media screen and (max-width: 896px) and (orientation: landscape) {
+    /* 欢迎界面调整 */
+    .welcome-section {
+        padding: 20px;
+        max-width: 100%;
+    }
+
+    .welcome-section h2 {
+        font-size: 20px;
+        margin-bottom: 8px;
+    }
+
+    .welcome-section p {
+        font-size: 12px;
+        margin-bottom: 15px;
+    }
+
+    .welcome-section .ai-avatar {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 15px;
+    }
+
+    .suggestion-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        padding: 0 10px;
+    }
+
+    .suggestion-btn {
+        padding: 8px;
+        font-size: 12px;
+    }
+
+    /* 顶部导航栏调整 */
+    .top-nav {
+        padding: 5px;
+        height: auto;
+        min-height: 40px;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        justify-content: flex-start;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .top-nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .model-selector {
+        flex-shrink: 0;
+        display: flex;
+        gap: 4px;
+    }
+
+    .model-btn {
+        padding: 4px 8px;
+        font-size: 11px;
+        white-space: nowrap;
+    }
+
+    /* 模型选择器调整 */
+    .gpt-model-selector,
+    .zhipu-model-selector,
+    .qwen-model-selector,
+    .flux-model-selector,
+    .video-model-selector {
+        margin-left: 8px;
+        flex-shrink: 0;
+    }
+
+    .gpt-model-selector select,
+    .zhipu-model-selector select,
+    .qwen-model-selector select,
+    .flux-model-selector select,
+    .video-model-selector select {
+        min-width: 100px;
+        font-size: 11px;
+        padding: 4px 20px 4px 8px;
+    }
+
+    /* 侧边栏调整 */
+    .sidebar {
+        width: 150px;
+        min-width: 150px;
+        padding: 8px;
+    }
+
+    .new-chat-btn {
+        padding: 6px;
+        font-size: 11px;
+        height: 32px;
+    }
+
+    .chat-history-item {
+        padding: 6px 8px;
+        margin: 2px 0;
+    }
+
+    .chat-history-item .chat-title {
+        font-size: 11px;
+        line-height: 1.3;
+    }
+
+    .chat-meta {
+        font-size: 10px;
+    }
+
+    .model-tag {
+        padding: 1px 4px;
+        font-size: 9px;
+    }
+
+    .chat-time {
+        font-size: 9px;
+    }
+
+    /* 主内容区域调整 */
+    .main-content {
+        min-width: 0;
+    }
+
+    .chat-container {
+        padding-top: 0;
+    }
+
+    .message {
+        padding: 0 8px;
+        margin-bottom: 8px;
+    }
+
+    .message-content {
+        max-width: calc(100% - 60px);
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+
+    /* 输入区域调整 */
+    .input-area {
+        padding: 6px 8px;
+        gap: 6px;
+    }
+
+    textarea {
+        font-size: 12px;
+        min-height: 32px;
+        padding: 6px 10px;
+    }
+
+    #sendBtn {
+        height: 32px;
+        width: 32px;
+        padding: 6px;
+    }
+
+    /* 免责声明调整 */
+    .disclaimer {
+        padding: 4px 8px;
+        font-size: 9px;
+        line-height: 1.2;
+    }
+}
+
+/* 优化滚动条 */
+.top-nav::-webkit-scrollbar {
+    height: 3px;
+}
+
+.top-nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.top-nav::-webkit-scrollbar-thumb {
+    background-color: rgba(123, 102, 255, 0.2);
+    border-radius: 3px;
+}
+
+/* 优化模型选择器下拉箭头 */
+.gpt-model-selector::after,
+.zhipu-model-selector::after,
+.qwen-model-selector::after,
+.flux-model-selector::after,
+.video-model-selector::after {
+    right: 6px;
+    font-size: 10px;
+}
+
+/* 更新作者信息栏样式 */
+.author-info {
+    padding: 8px 15px;
+    background: linear-gradient(to right, #f8f9fa, #fff, #f8f9fa);
+    border-top: 1px solid #e5e7eb;
+    text-align: center;
+    font-size: 12px;
+    color: #666;
+}
+
+.author-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.author-content a {
+    color: #7b66ff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.3s ease;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.author-content a:hover {
+    color: #6a56ea;
+    background-color: rgba(123, 102, 255, 0.1);
+    transform: translateY(-1px);
+}
+
+.cursor-logo {
+    height: 14px;
+    width: auto;
+    filter: brightness(0.8);
+    transition: all 0.3s ease;
+}
+
+.author-content a:hover .cursor-logo {
+    filter: brightness(1);
+}
+
+.author-content .fa-heart {
+    color: #ff6b6b;
+    font-size: 11px;
+    margin: 0 2px;
+    animation: heartbeat 1.5s ease infinite;
+}
+
+.author-content .fa-github {
+    font-size: 14px;
+}
+
+@keyframes heartbeat {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* 移动端适配 */
+@media screen and (max-width: 896px) and (orientation: landscape) {
+    .author-info {
+        padding: 4px 8px;
+        font-size: 10px;
+    }
+
+    .cursor-logo {
+        height: 12px;
+    }
+
+    .author-content {
+        gap: 4px;
+    }
+
+    .author-content a {
+        padding: 1px 4px;
+    }
+
+    .author-content .fa-heart {
+        font-size: 9px;
+    }
+
+    .author-content .fa-github {
+        font-size: 12px;
+    }
+}
+
+/* 开屏页面样式 */
+.splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #7b66ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeOut 0.5s ease 1s forwards;
+}
+
+.splash-content {
+    text-align: center;
+    color: white;
+    animation: scaleIn 0.5s ease;
+}
+
+.splash-content h1 {
+    font-size: 48px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+}
+
+.splash-content p {
+    font-size: 16px;
+    opacity: 0.8;
+}
+
+/* 开屏动画 */
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        visibility: visible;
+    }
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* 移动端适配 */
+@media screen and (max-width: 896px) {
+    .splash-content h1 {
+        font-size: 36px;
+    }
+    
+    .splash-content p {
+        font-size: 14px;
+    }
 }
