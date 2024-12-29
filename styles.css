@@ -17,6 +17,23 @@ body {
     background-color: #fff;
 }
 
+.warning-message {
+    background-color: #fff2f0;
+    border: 1px solid #ffccc7;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin: 10px 0;
+}
+
+.error-message {
+    background-color: #fff2f0;
+    border: 1px solid #ff4d4f;
+    padding: 16px;
+    border-radius: 4px;
+    margin: 20px 0;
+    text-align: center;
+}
+
 /* 侧边栏样式 */
 .sidebar {
     width: 260px;
