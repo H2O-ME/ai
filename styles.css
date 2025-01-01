@@ -149,6 +149,32 @@ body {
     margin-bottom: 20px;
 }
 
+/* 更新视频模型的品牌色为智谱AI的品牌色 */
+.model-tag.video {
+    background-color: #7b66ff;  /* 使用智谱AI的品牌色 */
+}
+
+/* 更新视频上传按钮样式 */
+.video-upload-btn {
+    background-color: #7b66ff;
+}
+
+.video-upload-btn:hover {
+    background-color: #6a56ea;
+}
+
+/* 更新视频模型头像样式 */
+.avatar img[src*="cogvideox"] {
+    padding: 4px;
+    background-color: #fff;
+    border: 2px solid #7b66ff;
+}
+
+.welcome-section .ai-avatar img[src*="cogvideox"] {
+    padding: 8px;
+    background-color: #fff;
+    border: 3px solid #7b66ff;
+}
 .suggestion-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));

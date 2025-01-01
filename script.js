@@ -75,7 +75,7 @@ class AIChatApp {
         const zhipuSelect = document.getElementById('zhipuModelSelect');
         if (zhipuSelect) {
             zhipuSelect.innerHTML = `
-                <option value="glm-4v">GLM-4V</option>
+                <option value="glm-4v-flash">glm-4v-flash</option>
                 <option value="THUDM/glm-4-9b-chat">GLM-4-9B-Chat</option>
             `;
         }
@@ -97,9 +97,9 @@ class AIChatApp {
         // 更新智谱AI配置
         this.zhipuConfig = {
             models: {
-                // GLM-4V - 使用智谱AI方API
-                'glm-4v': {
-                    name: 'GLM-4V',
+                // glm-4v-flash - 使用智谱AI方API
+                'glm-4v-flash': {
+                    name: 'glm-4v-flash',
                     maxTokens: 8192,
                     supportImage: true,
                     baseUrl: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
@@ -114,7 +114,7 @@ class AIChatApp {
                     apiKey: 'sk-hyeudoewxhrzksdcsfbyzkprbocvedmdhydzzmmpuohxxphs'
                 }
             },
-            model: 'glm-4v'  // 默认使用支持图片的模型
+            model: 'glm-4v-flash'  // 默认使用支持图片的模型
         };
         
         // 图床配置
@@ -268,21 +268,30 @@ class AIChatApp {
             }
         };
 
-        // 在 initializeConfigs 方法中添加视频配置
+        // 修改视频配置
         this.videoConfig = {
-            apiKey: 'sk-hyeudoewxhrzksdcsfbyzkprbocvedmdhydzzmmpuohxxphs',
-            submitUrl: 'https://api.siliconflow.cn/v1/video/submit',
-            statusUrl: 'https://api.siliconflow.cn/v1/video/status',
-            model: 'Lightricks/LTX-Video',
-            // 添加停用日期
-            endOfServiceDate: new Date('2025-01-01'),
+            apiKey: '8807fe42fcf8fa1208077876878dadbb.4xSEX4vp1Dzkx2WP',
+            submitUrl: 'https://open.bigmodel.cn/api/paas/v4/videos/generations',
+            statusUrl: 'https://open.bigmodel.cn/api/paas/v4/async-result',
+            model: 'cogvideox-flash',
             models: {
-                'Lightricks/LTX-Video': {
-                    name: 'LTX-Video',
+                'cogvideox-flash': {
+                    name: 'CogVideoX-Flash',
                     supportVideoGen: true,
                     supportImageToVideo: true,
-                    maxDuration: 10,
-                    defaultSteps: 30
+                    maxDuration: 10,     // 更新为最高支持10秒
+                    maxFps: 60,         // 更新为最高支持60fps
+                    defaultFps: 30,
+                    supportedSizes: [    // 添加支持的分辨率选项
+                        '720x480',
+                        '1024x1024',
+                        '1280x960',
+                        '960x1280',
+                        '1920x1080',
+                        '1080x1920',
+                        '2048x1080',
+                        '3840x2160'     // 支持4K分辨率
+                    ]
                 }
             }
         };
@@ -369,7 +378,7 @@ class AIChatApp {
                     <img src="${this.avatars.ai[this.currentModel]}" alt="Stable Diffusion头像">
                 </div>
                 <h2>Stable Diffusion 图像生成模型</h2>
-                <p>Stable Diffusion ${modelVersion} 是一个基于潜在扩散的文本到图像生成模型${supportsImg2Img ? '，支持生成图像' : '，专注于高质量的文本到图像生成'}</p>
+                <p>Stable Diffusion ${modelVersion} 是一个基于潜在扩散的文本到图像生成模型${supportsImg2Img ? '，支持文本生成���像����图像到图像的转换' : '，专注于高质量的文本到图像生成'}</p>
                 <div class="suggestion-grid">
                     <button class="suggestion-btn">一只在月光下奔跑的狼</button>
                     <button class="suggestion-btn">科幻风格的未来城市</button>
@@ -398,41 +407,23 @@ class AIChatApp {
                 </div>
             `;
         } else if (this.currentModel === 'video') {
-            const currentDate = new Date();
-            const daysUntilEnd = Math.ceil((this.videoConfig.endOfServiceDate - currentDate) / (1000 * 60 * 60 * 24));
-            
-            if (daysUntilEnd > 0) {
-                welcomeContent = `
-                    <div class="ai-avatar">
-                        <img src="${this.avatars.ai[this.currentModel]}" alt="LTX-Video头像">
-                    </div>
-                    <h2>LTX-Video 视频生成模型</h2>
-                    <p>LTX-Video 是一个强大的文本到视频生成模型，支持文本生成视频和图片转视频功能</p>
-                    <div class="warning-message" style="color: #ff4d4f; margin: 10px 0;">
-                        ⚠️ 提醒：该模型将于2025年1月1日停止支持（还剩 ${daysUntilEnd} 天）
-                    </div>
-                    <div class="suggestion-grid">
-                        <button class="suggestion-btn">一只猫咪在玩毛线球</button>
-                        <button class="suggestion-btn">日落时分的海浪</button>
-                        <button class="suggestion-btn">城市街道的车流</button>
-                        <button class="suggestion-btn">下雨天的窗户</button>
-                    </div>
-                    <div class="img2video-hint">
-                        <i class="fas fa-film"></i>
-                        <span>图片转视频功能：先输入提示词，再点击右下角的图片按钮上传原图</span>
-                    </div>
-                `;
-            } else {
-                welcomeContent = `
-                    <div class="ai-avatar">
-                        <img src="${this.avatars.ai[this.currentModel]}" alt="LTX-Video头像">
-                    </div>
-                    <h2>LTX-Video 视频生成模型</h2>
-                    <p class="error-message" style="color: #ff4d4f; font-weight: bold;">
-                        ⚠️ 该模型已于2025年1月1日停止支持，请选择其他模型。
-                    </p>
-                `;
-            }
+            welcomeContent = `
+                <div class="ai-avatar">
+                    <img src="${this.avatars.ai[this.currentModel]}" alt="CogVideoX头像">
+                </div>
+                <h2>CogVideoX-Flash 视频生成模型</h2>
+                <p>CogVideoX-Flash 是智谱AI开发的快速视频生成模型，支持4K高清视频生成，最高支持10秒视频长度和60fps帧率，并可生成AI音效</p>
+                <div class="suggestion-grid">
+                    <button class="suggestion-btn">一只猫咪在玩毛线球</button>
+                    <button class="suggestion-btn">日落时分的海浪</button>
+                    <button class="suggestion-btn">城市街道的车流</button>
+                    <button class="suggestion-btn">下雨天的窗户</button>
+                </div>
+                <div class="img2video-hint">
+                    <i class="fas fa-film"></i>
+                    <span>图片转视频功能：支持4K分辨率，10秒视频长度，60fps高帧率</span>
+                </div>
+            `;
         } else {
             welcomeContent = `
                 <div class="ai-avatar">
@@ -771,12 +762,12 @@ class AIChatApp {
         // 检查当前模型是否支持图片
         const selectedModel = document.getElementById('zhipuModelSelect')?.value;
         
-        if (this.currentModel === 'zhipu' && selectedModel !== 'glm-4v') {
-            this.addSystemMessage('只有 GLM-4V 型支持图片处理');
+        if (this.currentModel === 'zhipu' && selectedModel !== 'glm-4v-flash') {
+            this.addSystemMessage('只有 glm-4v-flash 型支持图片处理');
             return;
         }
 
-        if (this.currentModel !== 'zhipu' || selectedModel !== 'glm-4v') {
+        if (this.currentModel !== 'zhipu' || selectedModel !== 'glm-4v-flash') {
             this.addSystemMessage('当前模型不支持图片处理');
             return;
         }
@@ -993,8 +984,16 @@ class AIChatApp {
                 const htmlContent = marked.parse(message);
                 messageContent.innerHTML = htmlContent;
 
-                // 使用通用渲染函数替换原有的 renderMathInElement
-                this.renderMathWithNavigation(messageContent);
+                // 渲染数学公式
+                renderMathInElement(messageContent, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false},
+                        {left: '\\[', right: '\\]', display: true},
+                        {left: '\\(', right: '\\)', display: false}
+                    ],
+                    throwOnError: false
+                });
 
                 // 高亮代码块
                 messageContent.querySelectorAll('pre code').forEach((block) => {
@@ -1016,9 +1015,9 @@ class AIChatApp {
                 content: "你是 OpenAI 开发的 GPT 助手。请持专业、客观的回答，你的回答应该准确、有帮助且符合伦理道德。"
             },
             zhipu: {
-                'glm-4v': {
+                'glm-4v-flash': {
                     role: "system",
-                    content: "你是智谱AI开发的GLM-4V视觉语言模型。你具备图像理解和自然语言交互的能力。请保持专业、客观专注于图像分析和文本理解任务。"
+                    content: "你是智谱AI开发的glm-4v-flash视觉语言模型。你具备图像理解和自然语言交互的能力。请保持专业、客观专注于图像分析和文本理解任务。"
                 },
                 'THUDM/glm-4-9b-chat': {
                     role: "system",
@@ -1160,52 +1159,7 @@ class AIChatApp {
                                         {left: '\\[', right: '\\]', display: true},
                                         {left: '\\(', right: '\\)', display: false}
                                     ],
-                                    throwOnError: false,
-                                    output: 'html',
-                                    callback: function(element) {
-                                        // 为每个数学公式添加导向标记
-                                        const displays = element.getElementsByClassName('katex-display');
-                                        Array.from(displays).forEach((display, index) => {
-                                            // 添加标记符号
-                                            const marker = document.createElement('span');
-                                            marker.className = 'formula-marker';
-                                            marker.textContent = '➜';
-                                            display.insertBefore(marker, display.firstChild);
-                                            
-                                            // 添加公式索引
-                                            display.setAttribute('data-formula-index', index + 1);
-                                        });
-
-                                        // 如果有公式，添加导航按钮
-                                        if (displays.length > 0) {
-                                            const nav = document.createElement('div');
-                                            nav.className = 'formula-nav';
-                                            nav.textContent = `${displays.length} 个数学公式`;
-                                            document.body.appendChild(nav);
-                                            
-                                            // 显示导航按钮
-                                            setTimeout(() => nav.classList.add('visible'), 100);
-
-                                            // 点击导航到下一个公式
-                                            let currentIndex = 0;
-                                            nav.addEventListener('click', () => {
-                                                currentIndex = (currentIndex + 1) % displays.length;
-                                                const nextFormula = displays[currentIndex];
-                                                
-                                                // 移除之前的高亮
-                                                Array.from(displays).forEach(d => d.classList.remove('highlight'));
-                                                
-                                                // 添加新的高亮
-                                                nextFormula.classList.add('highlight');
-                                                
-                                                // 滚动到公式位置
-                                                nextFormula.scrollIntoView({
-                                                    behavior: 'smooth',
-                                                    block: 'center'
-                                                });
-                                            });
-                                        }
-                                    }
+                                    throwOnError: false
                                 });
 
                                 // 高亮代码块
@@ -1480,8 +1434,16 @@ class AIChatApp {
                                 const htmlContent = marked.parse(fullContent);
                                 messageContent.innerHTML = htmlContent;
 
-                                // 使用通用渲染函数替换原有的 renderMathInElement
-                                this.renderMathWithNavigation(messageContent);
+                                // 渲染数学公式
+                                renderMathInElement(messageContent, {
+                                    delimiters: [
+                                        {left: '$$', right: '$$', display: true},
+                                        {left: '$', right: '$', display: false},
+                                        {left: '\\[', right: '\\]', display: true},
+                                        {left: '\\(', right: '\\)', display: false}
+                                    ],
+                                    throwOnError: false
+                                });
 
                                 // 高亮代码块
                                 messageContent.querySelectorAll('pre code').forEach((block) => {
@@ -1683,8 +1645,8 @@ class AIChatApp {
                 }
             },
             video: {
-                name: 'LTX-Video',
-                tag: '<span class="model-tag video">LTX-Video</span>'
+                name: 'CogVideoX',
+                tag: '<span class="model-tag video">CogVideoX</span>'
             }
         };
 
@@ -1885,10 +1847,10 @@ class AIChatApp {
         const uploadBtn = document.querySelector('.upload-btn');
         if (!uploadBtn) return;
 
-        // 只在 GLM-4V 模型下显示上传按钮，FLUX模型不需要上传按钮
+        // 只在 glm-4v-flash 模型下显示上传按钮，FLUX模型不需要上传按钮
         if (this.currentModel === 'zhipu') {
             const selectedModel = document.getElementById('zhipuModelSelect')?.value;
-            uploadBtn.style.display = selectedModel === 'glm-4v' ? 'flex' : 'none';
+            uploadBtn.style.display = selectedModel === 'glm-4v-flash' ? 'flex' : 'none';
         } else {
             uploadBtn.style.display = 'none';
         }
@@ -2053,16 +2015,9 @@ class AIChatApp {
     updateInputPlaceholder() {
         if (this.userInput) {
             if (this.currentModel === 'video') {
-                const currentDate = new Date();
-                if (currentDate >= this.videoConfig.endOfServiceDate) {
-                    this.userInput.placeholder = 'LTX-Video 模型已停止服务';
-                    this.userInput.disabled = true;  // 禁用输入框
-                    return;
-                }
-                this.userInput.disabled = false;  // 确保输入框可用
-            }
-            
-            if (this.currentModel === 'flux' || this.currentModel === 'sd') {
+                this.userInput.placeholder = '请输入视频描述...';
+                this.userInput.disabled = false;
+            } else if (this.currentModel === 'flux' || this.currentModel === 'sd') {
                 this.userInput.placeholder = '请输入图片描述...';
             } else {
                 this.userInput.placeholder = '请输入您的问题...';
@@ -2089,25 +2044,9 @@ class AIChatApp {
 
     // 修改 generateVideo 方法，支持图生视频
     async generateVideo(prompt, imageUrl = null) {
-        // 检查服务是否已停用
-        const currentDate = new Date();
-        if (currentDate >= this.videoConfig.endOfServiceDate) {
-            this.addSystemMessage('LTX-Video 模型服务已于2025年1月1日停止支持，请选择其他模型。', this.avatars.system);
-            // 清除加载状态
-            this.sendBtn.classList.remove('loading');
-            // 重置请求状态
-            this.currentRequest = null;
-            this.abortController = null;
-            return;
-        }
-
         if (!prompt) {
             console.error('未收到提示词');
             return;
-        }
-        console.log('generateVideo 收到提示词:', prompt);
-        if (imageUrl) {
-            console.log('收到图片:', imageUrl);
         }
 
         this.abortController = new AbortController();
@@ -2117,17 +2056,6 @@ class AIChatApp {
         try {
             // 清空输入框
             this.userInput.value = '';
-
-            // 添加用户消息
-            if (imageUrl) {
-                const userMessageContent = `
-                    <p>${prompt}</p>
-                    <img src="${imageUrl}" alt="用户上传的图片" style="max-width: 300px; border-radius: 8px; margin-top: 10px;">
-                `;
-                this.addMessageToChat('user', userMessageContent, true);
-            } else {
-                this.addMessageToChat('user', prompt);
-            }
 
             this.sendBtn.classList.add('loading');
             
@@ -2153,19 +2081,20 @@ class AIChatApp {
                 lastSystemMessage.appendChild(progressDiv);
             }
 
-            // 模拟进度更新
+            // 修改进度条更新逻辑
             let progress = 0;
             const progressFill = progressDiv.querySelector('.progress-fill');
             const progressText = progressDiv.querySelector('.progress-text');
             
             progressInterval = setInterval(() => {
                 if (progress < 85) {
-                    progress += Math.random() * 1.5;
+                    // 增加进度增长速度
+                    progress += Math.random() * 3;  // 从1.5增加到3
                     progress = Math.min(progress, 85);
                     progressFill.style.width = `${progress}%`;
                     progressText.textContent = `${Math.round(progress)}%`;
                 }
-            }, 1000);
+            }, 500);  // 从1000ms减少到500ms
 
             // 优化提示词
             const enhancedPrompt = await this.optimizePrompt(prompt, 'video');
@@ -2207,25 +2136,21 @@ class AIChatApp {
                 }
             }
 
-            // 提交视频生成请求
+            // 修改提交请求体格式
             const submitBody = {
-                model: "Lightricks/LTX-Video",
+                model: "cogvideox-flash",
                 prompt: enhancedPrompt,
-                negative_prompt: "",
-                num_inference_steps: 30,
-                guidance_scale: 7.5,
-                width: 512,
-                height: 512,
-                num_frames: imageLink ? 24 : 16,  // 图生视频使用更多帧数
-                fps: 8,
-                motion_bucket_id: 127,
-                seed: Math.floor(Math.random() * 2147483647)
+                quality: "quality",      // 使用高质量模式
+                with_audio: true,       // 启用AI音效
+                size: imageUrl ? "3840x2160" : "1920x1080",  // 图生视频时使用4K分辨率
+                duration: imageUrl ? 10 : 5,  // 图生视频时使用10秒
+                fps: 60,                // 使用最高帧率
+                request_id: Date.now().toString()
             };
 
             // 如果有图片链接，添加到请求体
             if (imageLink) {
-                submitBody.image = imageLink;
-                console.log('添加图片到请求:', imageLink);
+                submitBody.image_url = imageLink;
             }
 
             // 发送请求
@@ -2242,48 +2167,80 @@ class AIChatApp {
                 throw new Error(`视频生成请求失败: ${await submitResponse.text()}`);
             }
 
-            const submitData = await submitResponse.json();
-            if (!submitData.requestId) {
-                throw new Error('未获取到请求ID');
+            const responseData = await submitResponse.json();
+            console.log('视频生成响应:', responseData);
+
+            // 获取任务ID
+            const taskId = responseData.id;
+            if (!taskId) {
+                throw new Error('未获取到任务ID');
             }
 
-            // 轮询获取视频状态
+            // 轮询等待处理完成
             while (true) {
-                const statusResponse = await fetch(this.videoConfig.statusUrl, {
-                    method: 'POST',
+                // 查询任务状态
+                const statusResponse = await fetch(`${this.videoConfig.statusUrl}/${taskId}`, {
+                    method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${this.videoConfig.apiKey}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        requestId: submitData.requestId
-                    })
+                        'Authorization': `Bearer ${this.videoConfig.apiKey}`
+                    }
                 });
 
                 if (!statusResponse.ok) {
-                    throw new Error(`获取视频状态失败: ${await statusResponse.text()}`);
+                    throw new Error(`获取任务状态失败: ${await statusResponse.text()}`);
                 }
 
                 const statusData = await statusResponse.json();
-                
-                if (statusData.status === 'Succeed') {
-                    // 完成进度条
-                    if (progressInterval) {
-                        clearInterval(progressInterval);
-                    }
-                    if (progressDiv) {
-                        progressFill.style.width = '100%';
-                        progressText.textContent = '100%';
-                        setTimeout(() => progressDiv.remove(), 500);
-                    }
+                console.log('任务状态:', statusData);
 
-                    // 显示生成的视频
-                    this.addVideoMessage('ai', statusData.results.videos[0].url);
-                    break;
-                } else if (statusData.status === 'InProgress') {
-                    await new Promise(resolve => setTimeout(resolve, 2000));
-                } else {
-                    throw new Error(statusData.reason || '视频生成失败');
+                switch (statusData.task_status) {
+                    case 'PROCESSING':
+                        // 继续等待并更新进度条
+                        if (progressDiv) {
+                            const progressFill = progressDiv.querySelector('.progress-fill');
+                            const progressText = progressDiv.querySelector('.progress-text');
+                            // 加快进度增长
+                            const currentProgress = Math.min(85, parseFloat(progressText.textContent));
+                            const newProgress = Math.min(85, currentProgress + Math.random() * 3);  // 从1.5增加到3
+                            progressFill.style.width = `${newProgress}%`;
+                            progressText.textContent = `${Math.round(newProgress)}%`;
+                        }
+                        // 减少等待时间
+                        await new Promise(resolve => setTimeout(resolve, 1000));  // 从2000ms减少到1000ms
+                        break;
+
+                    case 'SUCCESS':
+                        // 设置进度条为100%
+                        if (progressDiv) {
+                            const progressFill = progressDiv.querySelector('.progress-fill');
+                            const progressText = progressDiv.querySelector('.progress-text');
+                            progressFill.style.width = '100%';
+                            progressText.textContent = '100%';
+                            setTimeout(() => {
+                                if (progressDiv && progressDiv.parentNode) {
+                                    progressDiv.remove();
+                                }
+                            }, 500);
+                        }
+
+                        // 获取并显示视频
+                        if (statusData.video_result && statusData.video_result.length > 0) {
+                            const videoUrl = statusData.video_result[0].url;
+                            if (videoUrl) {
+                                this.addVideoMessage('ai', videoUrl);
+                                return;  // 成功后退出整个函数
+                            }
+                        }
+                        throw new Error('未找到视频结果');
+
+                    case 'FAIL':
+                        throw new Error(statusData.message || '视频生成失败');
+
+                    default:
+                        // 对于未知状态，继续等待而不是抛出错误
+                        console.log(`未知状态: ${statusData.task_status}，继续等待...`);
+                        await new Promise(resolve => setTimeout(resolve, 1000));  // 从2000ms减少到1000ms
+                        break;
                 }
             }
 
@@ -2291,6 +2248,7 @@ class AIChatApp {
             console.error('视频生成错误:', error);
             this.addSystemMessage(`视频生成失败: ${error.message}`);
         } finally {
+            // 确保清理所有状态
             if (progressInterval) {
                 clearInterval(progressInterval);
             }
@@ -2412,12 +2370,6 @@ class AIChatApp {
         
         // 如果是视频模型，检查是否已停用
         if (this.currentModel === 'video') {
-            const currentDate = new Date();
-            if (currentDate >= this.videoConfig.endOfServiceDate) {
-                // 服务已停用，不添加任何按钮
-                return;
-            }
-
             // 添加视频上传按钮
             const videoUploadBtn = document.createElement('button');
             videoUploadBtn.innerHTML = '<i class="fas fa-image"></i>';
@@ -2542,70 +2494,6 @@ class AIChatApp {
             appContainer.style.opacity = '1';
             appContainer.style.transition = 'opacity 0.5s ease';
         }, 1500);
-    }
-
-    // ↓ JS: 添加通用的 KaTeX 渲染函数
-    renderMathWithNavigation(element) {
-        renderMathInElement(element, {
-            delimiters: [
-                {left: '$$', right: '$$', display: true},
-                {left: '$', right: '$', display: false},
-                {left: '\\[', right: '\\]', display: true},
-                {left: '\\(', right: '\\)', display: false}
-            ],
-            throwOnError: false,
-            output: 'html',
-            callback: function(element) {
-                // 为每个数学公式添加导向标记
-                const displays = element.getElementsByClassName('katex-display');
-                Array.from(displays).forEach((display, index) => {
-                    // 添加标记符号
-                    const marker = document.createElement('span');
-                    marker.className = 'formula-marker';
-                    marker.textContent = '➜';
-                    display.insertBefore(marker, display.firstChild);
-                    
-                    // 添加公式索引
-                    display.setAttribute('data-formula-index', index + 1);
-                });
-
-                // 如果有公式，添加导航按钮
-                if (displays.length > 0) {
-                    // 移除旧的导航按钮
-                    const oldNav = document.querySelector('.formula-nav');
-                    if (oldNav) {
-                        oldNav.remove();
-                    }
-
-                    const nav = document.createElement('div');
-                    nav.className = 'formula-nav';
-                    nav.textContent = `${displays.length} 个数学公式`;
-                    document.body.appendChild(nav);
-                    
-                    // 显示导航按钮
-                    setTimeout(() => nav.classList.add('visible'), 100);
-
-                    // 点击导航到下一个公式
-                    let currentIndex = 0;
-                    nav.addEventListener('click', () => {
-                        currentIndex = (currentIndex + 1) % displays.length;
-                        const nextFormula = displays[currentIndex];
-                        
-                        // 移除之前的高亮
-                        Array.from(displays).forEach(d => d.classList.remove('highlight'));
-                        
-                        // 添加新的高亮
-                        nextFormula.classList.add('highlight');
-                        
-                        // 滚动到公式位置
-                        nextFormula.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'center'
-                        });
-                    });
-                }
-            }
-        });
     }
 }
 
