@@ -131,7 +131,8 @@ class AIChatApp {
                 qwen: 'https://sf-maas-uat-prod.oss-cn-shanghai.aliyuncs.com/Model_LOGO/Tongyi.svg',
                 flux: 'https://sf-maas-uat-prod.oss-cn-shanghai.aliyuncs.com/Model_LOGO/blackforestlabs.svg',
                 sd: 'https://sf-maas-uat-prod.oss-cn-shanghai.aliyuncs.com/Model_LOGO/Stability.svg',
-                video: 'https://sf-maas-uat-prod.oss-cn-shanghai.aliyuncs.com/Model_LOGO/Lightricks.png'  // 添加 LTX-Video 头像
+                video: 'https://sf-maas-uat-prod.oss-cn-shanghai.aliyuncs.com/Model_LOGO/Lightricks.png',  // 添加 LTX-Video 头像
+                deepseek: 'https://www.deepseek.com/favicon.ico'  // DeepSeek的图标
             },
             user: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzY2NjY2NiIgZD0iTTEyIDJhMTAgMTAgMCAxIDAgMTAgMTBBMTAgMTAgMCAwIDAgMTIgMnptMCA1YTMgMyAwIDEgMSAwIDYgMyAzIDAgMCAxIDAtNnptMCAxM2E4LjAxIDguMDEgMCAwIDEtNi0yLjczVjE2YTMgMyAwIDAgMSAzLTNoNmEzIDMyIDAgMCAxIDMgM3YxLjI3YTguMDEgOC4wMSAwIDAgMS02IDIuNzN6Ii8+PC9zdmc+',
             system: 'https://chatglm.cn/img/logo-collapse.d00ef130.svg'
@@ -295,6 +296,19 @@ class AIChatApp {
                 }
             }
         };
+
+        // 添加 DeepSeek 配置
+        this.deepseekConfig = {
+            apiUrl: 'https://api.pearktrue.cn/api/deepseek/',
+            model: 'deepseek',
+            models: {
+                'deepseek': {
+                    name: 'DeepSeek',
+                    maxTokens: 4096,
+                    supportImage: false
+                }
+            }
+        };
     }
 
     initializeElements() {
@@ -378,7 +392,7 @@ class AIChatApp {
                     <img src="${this.avatars.ai[this.currentModel]}" alt="Stable Diffusion头像">
                 </div>
                 <h2>Stable Diffusion 图像生成模型</h2>
-                <p>Stable Diffusion ${modelVersion} 是一个基于潜在扩散的文本到图像生成模型${supportsImg2Img ? '，支持文本生成���像����图像到图像的转换' : '，专注于高质量的文本到图像生成'}</p>
+                <p>Stable Diffusion ${modelVersion} 是一个基于潜在扩散的文本到图像生成模型${supportsImg2Img ? '，支持文本生成图像，并支持图像到图像的转换' : '，专注于高质量的文本到图像生成'}</p>
                 <div class="suggestion-grid">
                     <button class="suggestion-btn">一只在月光下奔跑的狼</button>
                     <button class="suggestion-btn">科幻风格的未来城市</button>
@@ -422,6 +436,20 @@ class AIChatApp {
                 <div class="img2video-hint">
                     <i class="fas fa-film"></i>
                     <span>图片转视频功能：支持4K分辨率，10秒视频长度，60fps高帧率</span>
+                </div>
+            `;
+        } else if (this.currentModel === 'deepseek') {
+            welcomeContent = `
+                <div class="ai-avatar">
+                    <img src="${this.avatars.ai[this.currentModel]}" alt="DeepSeek头像">
+                </div>
+                <h2>DeepSeek AI助手</h2>
+                <p>DeepSeek 探索未至之境</p>
+                <div class="suggestion-grid">
+                    <button class="suggestion-btn">你好，请做个自我介绍</button>
+                    <button class="suggestion-btn">帮我写一段代码</button>
+                    <button class="suggestion-btn">解释一个概念</button>
+                    <button class="suggestion-btn">分析一个问题</button>
                 </div>
             `;
         } else {
@@ -1027,8 +1055,16 @@ class AIChatApp {
             qwen: {
                 role: "system",
                 content: "你是阿里的通义千问助手。你支持多语言交流和结构化输出。请保持严谨的专业态度，提供准确、有见地回答。"
+            },
+            deepseek: {
+                role: "system",
+                content: "You are a helpful assistant powered by DeepSeek. Please provide accurate and helpful responses while maintaining ethical standards."
             }
         };
+
+        if (this.currentModel === 'deepseek') {
+            return await this.getDeepSeekResponse(message, systemPrompts.deepseek);
+        }
 
         if (this.currentModel === 'zhipu') {
             const selectedModel = document.getElementById('zhipuModelSelect').value;
@@ -1315,7 +1351,7 @@ class AIChatApp {
                             }
                         } catch (e) {
                             if (!line.includes('[DONE]')) {
-                                console.error('解析���应数���出错:', e);
+                                console.error('解析�AI搜索引擎�应数���出错:', e);
                             }
                         }
                     }
@@ -1647,6 +1683,10 @@ class AIChatApp {
             video: {
                 name: 'CogVideoX',
                 tag: '<span class="model-tag video">CogVideoX</span>'
+            },
+            deepseek: {
+                name: 'DeepSeek',
+                tag: '<span class="model-tag deepseek">DeepSeek</span>'
             }
         };
 
@@ -1673,6 +1713,8 @@ class AIChatApp {
                 modelLabel = modelNames.zhipu.tag;
             } else if (this.currentModel === 'sd') {
                 modelLabel = modelNames.sd.tag;  // 使用统一的 SD 标签
+            } else if (this.currentModel === 'deepseek') {
+                modelLabel = modelNames.deepseek.tag;
             } else {
                 modelLabel = modelNames[this.currentModel] || '';
             }
@@ -2494,6 +2536,109 @@ class AIChatApp {
             appContainer.style.opacity = '1';
             appContainer.style.transition = 'opacity 0.5s ease';
         }, 1500);
+    }
+
+    // 添加 DeepSeek 的响应处理方法
+    async getDeepSeekResponse(message, systemPrompt) {
+        try {
+            this.sendBtn.classList.add('loading');
+
+            // 构建请求消息
+            let messages = [systemPrompt];
+
+            // 添加历史对话
+            if (this.conversationHistory.length > 0) {
+                messages = messages.concat(this.conversationHistory.slice(-10));
+            }
+
+            // 添加当前消息
+            messages.push({
+                role: "user",
+                content: message
+            });
+
+            // 发送请求
+            const response = await fetch(this.deepseekConfig.apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ messages })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            
+            if (data.code !== 200) {
+                throw new Error(data.msg || 'DeepSeek API 响应错误');
+            }
+
+            // 创建消息元素
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', 'ai-message');
+            
+            // 添加头像
+            const avatar = document.createElement('div');
+            avatar.className = 'avatar';
+            const avatarImg = document.createElement('img');
+            avatarImg.src = this.avatars.ai[this.currentModel];
+            avatarImg.alt = 'AI avatar';
+            avatar.appendChild(avatarImg);
+            messageDiv.appendChild(avatar);
+
+            // 添加消息内容
+            const messageContent = document.createElement('div');
+            messageContent.classList.add('message-content');
+            messageContent.innerHTML = '<div class="loading">正在思考...</div>';
+            messageDiv.appendChild(messageContent);
+            this.chatHistory.appendChild(messageDiv);
+
+            // 使用 marked 渲染回复内容
+            const htmlContent = marked.parse(data.message);
+            messageContent.innerHTML = htmlContent;
+
+            // 渲染数学公式
+            renderMathInElement(messageContent, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false},
+                    {left: '\\[', right: '\\]', display: true},
+                    {left: '\\(', right: '\\)', display: false}
+                ],
+                throwOnError: false
+            });
+
+            // 高亮代码块
+            messageContent.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+
+            // 滚动到底部
+            this.chatHistory.scrollTop = this.chatHistory.scrollHeight;
+
+            // 保存对话历史
+            this.conversationHistory.push({
+                role: "user",
+                content: message
+            });
+
+            this.conversationHistory.push({
+                role: "assistant",
+                content: data.message
+            });
+
+            return data.message;
+
+        } catch (error) {
+            console.error('DeepSeek API调用错误:', error);
+            this.addSystemMessage(`API调用失败: ${error.message}`);
+            throw error;
+        } finally {
+            this.sendBtn.classList.remove('loading');
+        }
     }
 }
 
