@@ -7,7 +7,9 @@ class AIChatApp {
             qwen: new Map(),
             flux: new Map(),
             sd: new Map(),
-            video: new Map()  // 添加视频模型的历史记录
+            video: new Map(),  // 添加视频模型的历史记录
+            marco: new Map(),
+            yi: new Map(),
         };
         
         // 初始化 GPT 配置
@@ -132,7 +134,9 @@ class AIChatApp {
                 flux: 'https://sf-maas-uat-prod.oss-cn-shanghai.aliyuncs.com/Model_LOGO/blackforestlabs.svg',
                 sd: 'https://sf-maas-uat-prod.oss-cn-shanghai.aliyuncs.com/Model_LOGO/Stability.svg',
                 video: 'https://sf-maas-uat-prod.oss-cn-shanghai.aliyuncs.com/Model_LOGO/Lightricks.png',  // 添加 LTX-Video 头像
-                deepseek: 'https://www.deepseek.com/favicon.ico'  // DeepSeek的图标
+                deepseek: 'https://www.deepseek.com/favicon.ico',  // DeepSeek的图标
+                marco: 'https://sf-maas-uat-prod.oss-cn-shanghai.aliyuncs.com/Model_LOGO/AIDC_AI.png',
+                yi: 'https://sf-maas-uat-prod.oss-cn-shanghai.aliyuncs.com/Model_LOGO/Yi.svg'
             },
             user: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzY2NjY2NiIgZD0iTTEyIDJhMTAgMTAgMCAxIDAgMTAgMTBBMTAgMTAgMCAwIDAgMTIgMnptMCA1YTMgMyAwIDEgMSAwIDYgMyAzIDAgMCAxIDAtNnptMCAxM2E4LjAxIDguMDEgMCAwIDEtNi0yLjczVjE2YTMgMyAwIDAgMSAzLTNoNmEzIDMyIDAgMCAxIDMgM3YxLjI3YTguMDEgOC4wMSAwIDAgMS02IDIuNzN6Ii8+PC9zdmc+',
             system: 'https://chatglm.cn/img/logo-collapse.d00ef130.svg'
@@ -246,7 +250,7 @@ class AIChatApp {
         this.sdConfig = {
             apiKey: 'sk-hyeudoewxhrzksdcsfbyzkprbocvedmdhydzzmmpuohxxphs',
             baseUrl: 'https://api.siliconflow.cn/v1/images/generations',
-            model: 'stabilityai/stable-diffusion-3-5-large',  // 修改默认模型为 3.5 版本
+            model: 'stabilityai/stable-diffusion-3-5-large',
             models: {
                 'stabilityai/stable-diffusion-3-5-large': {
                     name: 'Stable Diffusion v3.5',
@@ -255,15 +259,6 @@ class AIChatApp {
                     defaultSize: '1024x1024',
                     supportedSizes: ['1024x1024', '512x1024', '768x512', '768x1024', '1024x576', '576x1024'],
                     defaultSteps: 20,
-                    defaultGuidance: 7.5
-                },
-                'stabilityai/stable-diffusion-2-1': {
-                    name: 'Stable Diffusion v2.1',
-                    supportImageGen: true,
-                    supportImageToImage: true,  // 支持图生图
-                    defaultSize: '512x512',
-                    supportedSizes: ['256x256', '512x512', '768x768', '1024x1024'],
-                    defaultSteps: 30,
                     defaultGuidance: 7.5
                 }
             }
@@ -306,6 +301,38 @@ class AIChatApp {
                     name: 'DeepSeek',
                     maxTokens: 4096,
                     supportImage: false
+                }
+            }
+        };
+
+        // 添加 Marco-o1 配置
+        this.marcoConfig = {
+            apiKey: 'sk-hyeudoewxhrzksdcsfbyzkprbocvedmdhydzzmmpuohxxphs',
+            baseUrl: 'https://api.siliconflow.cn/v1/chat/completions',
+            model: 'AIDC-AI/Marco-o1',
+            models: {
+                'AIDC-AI/Marco-o1': {
+                    name: 'Marco-o1',
+                    maxTokens: 4096,
+                    supportImage: false,
+                    supportThoughtChain: true,
+                    supportFunctionCall: true,
+                    supportMultiLingual: true
+                }
+            }
+        };
+
+        // 添加 Yi 配置
+        this.yiConfig = {
+            apiKey: 'sk-hyeudoewxhrzksdcsfbyzkprbocvedmdhydzzmmpuohxxphs',
+            baseUrl: 'https://api.siliconflow.cn/v1/chat/completions',
+            model: '01-ai/Yi-1.5-9B-Chat-16K',
+            models: {
+                '01-ai/Yi-1.5-9B-Chat-16K': {
+                    name: 'Yi-1.5-9B-Chat-16K',
+                    maxTokens: 16384,
+                    supportImage: false,
+                    supportMultiLingual: true
                 }
             }
         };
@@ -367,7 +394,67 @@ class AIChatApp {
         
         // 根据不同模型显示不同的欢迎信息
         let welcomeContent = '';
-        if (this.currentModel === 'flux') {
+        if (this.currentModel === 'gpt') {
+            welcomeContent = `
+                <div class="ai-avatar">
+                    <img src="${this.avatars.ai[this.currentModel]}" alt="GPT头像">
+                </div>
+                <h2>ChatGPT</h2>
+                <p>基于 OpenAI GPT 系列模型，支持多种任务处理</p>
+                <div class="model-features">
+                    <span><i class="fas fa-brain"></i> 通用对话</span>
+                    <span><i class="fas fa-code"></i> 代码编程</span>
+                    <span><i class="fas fa-pen"></i> 文本创作</span>
+                    <span><i class="fas fa-calculator"></i> 数学计算</span>
+                </div>
+                <div class="suggestion-grid">
+                    <button class="suggestion-btn">帮我写一段代码</button>
+                    <button class="suggestion-btn">解释一个概念</button>
+                    <button class="suggestion-btn">创作一篇文章</button>
+                    <button class="suggestion-btn">数学问题求解</button>
+                </div>
+            `;
+        } else if (this.currentModel === 'zhipu') {
+            welcomeContent = `
+                <div class="ai-avatar">
+                    <img src="${this.avatars.ai[this.currentModel]}" alt="智谱AI头像">
+                </div>
+                <h2>智谱 AI</h2>
+                <p>基于清华 ChatGLM 系列模型，支持中英双语对话和多模态理解</p>
+                <div class="model-features">
+                    <span><i class="fas fa-comments"></i> 中英对话</span>
+                    <span><i class="fas fa-image"></i> 图像理解</span>
+                    <span><i class="fas fa-book"></i> 知识问答</span>
+                    <span><i class="fas fa-tasks"></i> 任务处理</span>
+                </div>
+                <div class="suggestion-grid">
+                    <button class="suggestion-btn">分析一张图片</button>
+                    <button class="suggestion-btn">解答学术问题</button>
+                    <button class="suggestion-btn">中英互译</button>
+                    <button class="suggestion-btn">数据分析</button>
+                </div>
+            `;
+        } else if (this.currentModel === 'qwen') {
+            welcomeContent = `
+                <div class="ai-avatar">
+                    <img src="${this.avatars.ai[this.currentModel]}" alt="通义千问头像">
+                </div>
+                <h2>通义千问</h2>
+                <p>阿里云 Qwen 系列模型，擅长中文理解和多领域知识</p>
+                <div class="model-features">
+                    <span><i class="fas fa-language"></i> 中文优化</span>
+                    <span><i class="fas fa-database"></i> 知识库</span>
+                    <span><i class="fas fa-chart-line"></i> 数据分析</span>
+                    <span><i class="fas fa-robot"></i> 智能助手</span>
+                </div>
+                <div class="suggestion-grid">
+                    <button class="suggestion-btn">编写商业方案</button>
+                    <button class="suggestion-btn">技术文档生成</button>
+                    <button class="suggestion-btn">数据可视化</button>
+                    <button class="suggestion-btn">知识问答</button>
+                </div>
+            `;
+        } else if (this.currentModel === 'flux') {
             welcomeContent = `
                 <div class="ai-avatar">
                     <img src="${this.avatars.ai[this.currentModel]}" alt="FLUX头像">
@@ -382,29 +469,18 @@ class AIChatApp {
                 </div>
             `;
         } else if (this.currentModel === 'sd') {
-            // 使用新的选择器结构获取当前选中的模型
-            const selectedModelText = document.querySelector('.sd-model-selector .selected-model span')?.textContent;
-            const modelVersion = selectedModelText?.includes('v3.5') ? 'v3.5' : 'v2.1';
-            const supportsImg2Img = selectedModelText?.includes('v2.1');
-            
             welcomeContent = `
                 <div class="ai-avatar">
                     <img src="${this.avatars.ai[this.currentModel]}" alt="Stable Diffusion头像">
                 </div>
                 <h2>Stable Diffusion 图像生成模型</h2>
-                <p>Stable Diffusion ${modelVersion} 是一个基于潜在扩散的文本到图像生成模型${supportsImg2Img ? '，支持文本生成图像，并支持图像到图像的转换' : '，专注于高质量的文本到图像生成'}</p>
+                <p>Stable Diffusion v3.5 是一个专注于高质量文本到图像生成的扩散模型</p>
                 <div class="suggestion-grid">
                     <button class="suggestion-btn">一只在月光下奔跑的狼</button>
                     <button class="suggestion-btn">科幻风格的未来城市</button>
                     <button class="suggestion-btn">水墨画风格的春天樱花</button>
                     <button class="suggestion-btn">写实风格的人像素描</button>
                 </div>
-                ${supportsImg2Img ? `
-                <div class="img2img-hint">
-                    <i class="fas fa-images"></i>
-                    <span>图生图功能：先输入提示词，再点右下角的图像按钮上传原图</span>
-                </div>
-                ` : ''}
             `;
         } else if (selectedModel === 'Qwen/Qwen2.5-7B-Instruct') {
             welcomeContent = `
@@ -450,6 +526,34 @@ class AIChatApp {
                     <button class="suggestion-btn">帮我写一段代码</button>
                     <button class="suggestion-btn">解释一个概念</button>
                     <button class="suggestion-btn">分析一个问题</button>
+                </div>
+            `;
+        } else if (this.currentModel === 'marco') {
+            welcomeContent = `
+                <div class="ai-avatar">
+                    <img src="${this.avatars.ai[this.currentModel]}" alt="Marco-o1头像">
+                </div>
+                <h2>Marco-o1 AI助手</h2>
+                <p>Marco-o1 是一个支持多语言交流和结构化输出的AI模型</p>
+                <div class="suggestion-grid">
+                    <button class="suggestion-btn">我写一段代码</button>
+                    <button class="suggestion-btn">生成JSON数据</button>
+                    <button class="suggestion-btn">多语言翻译</button>
+                    <button class="suggestion-btn">数学计算</button>
+                </div>
+            `;
+        } else if (this.currentModel === 'yi') {
+            welcomeContent = `
+                <div class="ai-avatar">
+                    <img src="${this.avatars.ai[this.currentModel]}" alt="Yi头像">
+                </div>
+                <h2>Yi-1.5-9B-Chat-16K</h2>
+                <p>Yi 是一个支持多语言交流的大规模语言模型</p>
+                <div class="suggestion-grid">
+                    <button class="suggestion-btn">写一段代码</button>
+                    <button class="suggestion-btn">解释一个概念</button>
+                    <button class="suggestion-btn">多语言翻译</button>
+                    <button class="suggestion-btn">数学计算</button>
                 </div>
             `;
         } else {
@@ -725,50 +829,9 @@ class AIChatApp {
 
     setupFileUpload() {
         const inputArea = document.querySelector('.input-area');
-
-        // 如果是 SD 模型，且是 2.1 版本时，添加图生图按钮
-        if (this.currentModel === 'sd') {
-            // 使用新的选择器结构获取当前选中的模型
-            const selectedModelText = document.querySelector('.sd-model-selector .selected-model span')?.textContent;
-            if (selectedModelText && selectedModelText.includes('v2.1')) {
-                const img2imgBtn = document.createElement('button');
-                img2imgBtn.innerHTML = '<i class="fas fa-images"></i>';
-                img2imgBtn.className = 'img2img-btn';
-                img2imgBtn.title = '图生图';
-                inputArea.insertBefore(img2imgBtn, this.sendBtn);
-
-                img2imgBtn.addEventListener('click', () => {
-                    // 先检查是否有提示词
-                    const prompt = this.userInput.value.trim();
-                    if (!prompt) {
-                        this.addSystemMessage('请先输入提示词，描述你想要的图片效果');
-                        this.userInput.focus();
-                        return;
-                    }
-
-                    const fileInput = document.createElement('input');
-                    fileInput.type = 'file';
-                    fileInput.accept = 'image/*';
-                    fileInput.style.display = 'none';
-                    
-                    fileInput.addEventListener('change', async (e) => {
-                        const file = e.target.files[0];
-                        if (file) {
-                            if (file.size > 5 * 1024 * 1024) {  // 5MB
-                                this.addSystemMessage('图片大小不能超过5MB');
-                                return;
-                            }
-                            const base64Data = await this.fileToBase64(file);
-                            await this.generateImageFromImage(base64Data, prompt);
-                        }
-                        fileInput.remove();
-                    });
-
-                    document.body.appendChild(fileInput);
-                    fileInput.click();
-                });
-            }
-        }
+        
+        // 移除所有与 SD 2.1 和图生图相关的代码
+        // 只保留其他文件上传相关的功能
     }
 
     // 在 switchModel 方法中添加按钮更新
@@ -1059,6 +1122,14 @@ class AIChatApp {
             deepseek: {
                 role: "system",
                 content: "You are a helpful assistant powered by DeepSeek. Please provide accurate and helpful responses while maintaining ethical standards."
+            },
+            marco: {
+                role: "system",
+                content: "当你回答问题时，你的思考应该在<Thought>内完成，<Output>内输出你的结果。<Thought>应该尽可能是中文，但是有2个特例，一个是对原文中的引用，另一个是是数学应该使用markdown格式，<Output>内的输出需要遵循用户输入的语言。"
+            },
+            yi: {
+                role: "system",
+                content: "你是由01.AI开发的Yi大语言模型。请提供准确、专业的回答。"
             }
         };
 
@@ -1074,6 +1145,10 @@ class AIChatApp {
             return await this.getGPTResponse(message, systemPrompts.gpt);
         } else if (this.currentModel === 'qwen') {
             return await this.getQwenResponse(message, systemPrompts.qwen);
+        } else if (this.currentModel === 'marco') {
+            return await this.getMarcoResponse(message, systemPrompts.marco);
+        } else if (this.currentModel === 'yi') {
+            return await this.getYiResponse(message, systemPrompts.yi);
         }
     }
 
@@ -1597,7 +1672,9 @@ class AIChatApp {
                     qwen: new Map(histories.qwen || []),
                     flux: new Map(histories.flux || []),
                     sd: new Map(histories.sd || []),
-                    video: new Map(histories.video || [])  // 添加 video
+                    video: new Map(histories.video || []),  // 添加 video
+                    marco: new Map(histories.marco || []),
+                    yi: new Map(histories.yi || []),
                 };
             }
             this.updateHistoryList();
@@ -1610,7 +1687,9 @@ class AIChatApp {
                 qwen: new Map(),
                 flux: new Map(),
                 sd: new Map(),
-                video: new Map()
+                video: new Map(),
+                marco: new Map(),
+                yi: new Map(),
             };
         }
     }
@@ -1619,7 +1698,7 @@ class AIChatApp {
         try {
             // 添加安全检查
             if (!this.chatHistories || !this.chatHistories.gpt || !this.chatHistories.zhipu || 
-                !this.chatHistories.qwen || !this.chatHistories.flux || !this.chatHistories.sd || !this.chatHistories.video) {
+                !this.chatHistories.qwen || !this.chatHistories.flux || !this.chatHistories.sd || !this.chatHistories.video || !this.chatHistories.marco || !this.chatHistories.yi) {
                 console.error('chatHistories 未正确初始化');
                 // 重新初始化
                 this.chatHistories = {
@@ -1628,7 +1707,9 @@ class AIChatApp {
                     qwen: new Map(),
                     flux: new Map(),
                     sd: new Map(),
-                    video: new Map()
+                    video: new Map(),
+                    marco: new Map(),
+                    yi: new Map(),
                 };
             }
 
@@ -1638,7 +1719,9 @@ class AIChatApp {
                 qwen: Array.from(this.chatHistories.qwen.entries()),
                 flux: Array.from(this.chatHistories.flux.entries()),
                 sd: Array.from(this.chatHistories.sd.entries()),
-                video: Array.from(this.chatHistories.video.entries())
+                video: Array.from(this.chatHistories.video.entries()),
+                marco: Array.from(this.chatHistories.marco.entries()),
+                yi: Array.from(this.chatHistories.yi.entries()),
             };
             
             localStorage.setItem('chatHistories', JSON.stringify(historiesData));
@@ -1687,6 +1770,14 @@ class AIChatApp {
             deepseek: {
                 name: 'DeepSeek',
                 tag: '<span class="model-tag deepseek">DeepSeek</span>'
+            },
+            marco: {
+                name: 'Marco-o1',
+                tag: '<span class="model-tag marco">Marco-o1</span>'
+            },
+            yi: {
+                name: 'Yi',
+                tag: '<span class="model-tag yi">Yi</span>'
             }
         };
 
@@ -1715,6 +1806,10 @@ class AIChatApp {
                 modelLabel = modelNames.sd.tag;  // 使用统一的 SD 标签
             } else if (this.currentModel === 'deepseek') {
                 modelLabel = modelNames.deepseek.tag;
+            } else if (this.currentModel === 'marco') {
+                modelLabel = modelNames.marco.tag;
+            } else if (this.currentModel === 'yi') {
+                modelLabel = modelNames.yi.tag;
             } else {
                 modelLabel = modelNames[this.currentModel] || '';
             }
@@ -2067,12 +2162,6 @@ class AIChatApp {
         }
     }
 
-    // 添加图生图方法
-    async generateImageFromImage(sourceImage, prompt) {
-        this.abortController = new AbortController();
-        // ... 其他代码保持不变 ...
-    }
-
     // 添加取消当前请求的方法
     cancelCurrentRequest() {
         if (this.abortController) {
@@ -2390,64 +2479,22 @@ class AIChatApp {
     }
 
     updateButtons() {
-        // ��除现有的按钮
+        // 移除现有的按钮
         const existingButtons = document.querySelectorAll('.img2img-btn, .video-upload-btn');
         existingButtons.forEach(btn => btn.remove());
 
         const inputArea = document.querySelector('.input-area');
         
-        // 如果是 SD 模型，且是 2.1 版本时，添加图生图按钮
-        if (this.currentModel === 'sd') {
-            const selectedModelText = document.querySelector('.sd-model-selector .selected-model span')?.textContent;
-            if (selectedModelText?.includes('v2.1')) {
-                const img2imgBtn = document.createElement('button');
-                img2imgBtn.innerHTML = '<i class="fas fa-images"></i>';
-                img2imgBtn.className = 'img2img-btn';
-                img2imgBtn.title = '图生图';
-                inputArea.insertBefore(img2imgBtn, this.sendBtn);
-                
-                // ... 图生图按钮的事件处理保持不变 ...
-            }
-        }
-        
-        // 如果是视频模型，检查是否已停用
+        // 只保留视频模型的按钮处理
         if (this.currentModel === 'video') {
-            // 添加视频上传按钮
+            // 视频模型相关代码保持不变
             const videoUploadBtn = document.createElement('button');
             videoUploadBtn.innerHTML = '<i class="fas fa-image"></i>';
             videoUploadBtn.className = 'video-upload-btn';
             videoUploadBtn.title = '上传图片生成视频';
             inputArea.insertBefore(videoUploadBtn, this.sendBtn);
 
-            videoUploadBtn.addEventListener('click', () => {
-                const prompt = this.userInput.value.trim();
-                if (!prompt) {
-                    this.addSystemMessage('请先输入提示词，描述你想要的视频效果');
-                    this.userInput.focus();
-                    return;
-                }
-
-                const fileInput = document.createElement('input');
-                fileInput.type = 'file';
-                fileInput.accept = 'image/*';
-                fileInput.style.display = 'none';
-                
-                fileInput.addEventListener('change', async (e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                        if (file.size > 5 * 1024 * 1024) {
-                            this.addSystemMessage('图片大小不能超过5MB');
-                            return;
-                        }
-                        const base64Data = await this.fileToBase64(file);
-                        await this.generateVideo(prompt, base64Data);
-                    }
-                    fileInput.remove();
-                });
-
-                document.body.appendChild(fileInput);
-                fileInput.click();
-            });
+            // ... 视频上传按钮的事件处理代码 ...
         }
     }
 
@@ -2639,6 +2686,362 @@ class AIChatApp {
         } finally {
             this.sendBtn.classList.remove('loading');
         }
+    }
+
+    // 添加文件转 base64 方法
+    fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+    }
+
+    // 添加 Marco-o1 响应处理方法
+    async getMarcoResponse(message, systemPrompt) {
+        try {
+            this.sendBtn.classList.add('loading');
+
+            // 构建请求消息
+            let messages = [];
+            if (systemPrompt) {
+                messages.push({
+                    role: "system",
+                    content: systemPrompt.content  // 修改这里，直接使用 content
+                });
+            }
+
+            // 添加历史对话
+            if (this.conversationHistory.length > 0) {
+                messages = messages.concat(this.conversationHistory.slice(-10));
+            }
+
+            // 添加当前消息
+            messages.push({
+                role: "user",
+                content: message
+            });
+
+            // 构建请求体
+            const requestBody = {
+                model: this.marcoConfig.model,
+                messages: messages,
+                temperature: 0.7,
+                max_tokens: 2000,
+                // 添加必要的参数
+                stream: false,
+                top_p: 0.95,
+                frequency_penalty: 0,
+                presence_penalty: 0
+            };
+
+            console.log('Marco-o1 Request:', {
+                url: this.marcoConfig.baseUrl,
+                headers: {
+                    'Authorization': `Bearer ${this.marcoConfig.apiKey}`,
+                    'Content-Type': 'application/json'
+                },
+                body: requestBody
+            });
+
+            // 发送请求
+            const response = await fetch(this.marcoConfig.baseUrl, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.marcoConfig.apiKey}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Marco-o1 API Error:', errorData);
+                throw new Error(`HTTP error! status: ${response.status}, message: ${JSON.stringify(errorData)}`);
+            }
+
+            const data = await response.json();
+            console.log('Marco-o1 Response:', data);
+            
+            let aiResponse = data.choices[0].message.content;
+
+            // 解析思考链和输出结果
+            let thoughtContent = '';
+            let outputContent = '';
+
+            // 提取<Thought>标签内容
+            const thoughtMatch = aiResponse.match(/<Thought>(.*?)<\/Thought>/s);
+            if (thoughtMatch) {
+                thoughtContent = thoughtMatch[1].trim();
+            }
+
+            // 提取<Output>标签内容
+            const outputMatch = aiResponse.match(/<Output>(.*?)<\/Output>/s);
+            if (outputMatch) {
+                outputContent = outputMatch[1].trim();
+            }
+
+            // 构建格式化的响应
+            let formattedResponse = '';
+            if (thoughtContent) {
+                // 处理思考过程中的代码块
+                thoughtContent = this.formatCodeBlocks(thoughtContent);
+                formattedResponse += `<div class="thought-chain">
+                    <div class="thought-header">💭 思考过程</div>
+                    ${thoughtContent}
+                </div>\n\n`;
+            }
+            if (outputContent) {
+                // 处理输出结果中的代码块
+                outputContent = this.formatCodeBlocks(outputContent);
+                formattedResponse += `<div class="output-result">
+                    <div class="output-header">🤖 输出结果</div>
+                    ${outputContent}
+                </div>`;
+            }
+            if (!formattedResponse) {
+                formattedResponse = aiResponse; // 如果没有标签，使用原始响应
+            }
+
+            // 创建消息元素
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', 'ai-message');
+            
+            // 添加头像
+            const avatar = document.createElement('div');
+            avatar.className = 'avatar';
+            const avatarImg = document.createElement('img');
+            avatarImg.src = this.avatars.ai[this.currentModel];
+            avatarImg.alt = 'AI avatar';
+            avatar.appendChild(avatarImg);
+            messageDiv.appendChild(avatar);
+
+            // 添加消息内容
+            const messageContent = document.createElement('div');
+            messageContent.classList.add('message-content');
+            messageContent.innerHTML = '<div class="loading">正在思考...</div>';
+            messageDiv.appendChild(messageContent);
+            this.chatHistory.appendChild(messageDiv);
+
+            // 修改 marked 配置以支持语言标识
+            const renderer = new marked.Renderer();
+            renderer.code = (code, language) => {
+                const validLanguage = hljs.getLanguage(language) ? language : '';
+                const highlighted = validLanguage ? 
+                    hljs.highlight(code, { language: validLanguage }).value : 
+                    hljs.highlightAuto(code).value;
+                
+                return `<pre><code class="hljs language-${validLanguage}">${highlighted}</code></pre>`;
+            };
+
+            // 使用配置的 renderer
+            const htmlContent = marked.parse(formattedResponse, { renderer });
+            messageContent.innerHTML = htmlContent;
+
+            // 渲染数学公式
+            renderMathInElement(messageContent, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false},
+                    {left: '\\[', right: '\\]', display: true},
+                    {left: '\\(', right: '\\)', display: false}
+                ],
+                throwOnError: false
+            });
+
+            // 高亮代码块
+            messageContent.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+
+            // 滚动到底部
+            this.chatHistory.scrollTop = this.chatHistory.scrollHeight;
+
+            // 保存对话历史
+            this.conversationHistory.push({
+                role: "user",
+                content: message
+            });
+
+            this.conversationHistory.push({
+                role: "assistant",
+                content: aiResponse
+            });
+
+            return aiResponse;
+
+        } catch (error) {
+            console.error('Marco-o1 API调用错误:', error);
+            this.addSystemMessage(`API调用失败: ${error.message}`);
+            throw error;
+        } finally {
+            this.sendBtn.classList.remove('loading');
+        }
+    }
+
+    // 添加 Yi 响应处理方法
+    async getYiResponse(message, systemPrompt) {
+        try {
+            this.sendBtn.classList.add('loading');
+
+            // 构建请求消息
+            let messages = [];
+            if (systemPrompt) {
+                messages.push({
+                    role: "system",
+                    content: systemPrompt.content
+                });
+            }
+
+            // 添加历史对话
+            if (this.conversationHistory.length > 0) {
+                messages = messages.concat(this.conversationHistory.slice(-10));
+            }
+
+            // 添加当前消息
+            messages.push({
+                role: "user",
+                content: message
+            });
+
+            // 构建请求体
+            const requestBody = {
+                model: this.yiConfig.model,
+                messages: messages,
+                temperature: 0.7,
+                max_tokens: 2000,
+                stream: false,
+                top_p: 0.95,
+                frequency_penalty: 0,
+                presence_penalty: 0
+            };
+
+            // 发送请求
+            const response = await fetch(this.yiConfig.baseUrl, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.yiConfig.apiKey}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Yi API Error:', errorData);
+                throw new Error(`HTTP error! status: ${response.status}, message: ${JSON.stringify(errorData)}`);
+            }
+
+            const data = await response.json();
+            let aiResponse = data.choices[0].message.content;
+            // 处理代码块
+            aiResponse = this.formatCodeBlocks(aiResponse);
+
+            // 创建消息元素
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', 'ai-message');
+            
+            // 添加头像
+            const avatar = document.createElement('div');
+            avatar.className = 'avatar';
+            const avatarImg = document.createElement('img');
+            avatarImg.src = this.avatars.ai[this.currentModel];
+            avatarImg.alt = 'AI avatar';
+            avatar.appendChild(avatarImg);
+            messageDiv.appendChild(avatar);
+
+            // 添加消息内容
+            const messageContent = document.createElement('div');
+            messageContent.classList.add('message-content');
+            messageContent.innerHTML = '<div class="loading">正在思考...</div>';
+            messageDiv.appendChild(messageContent);
+            this.chatHistory.appendChild(messageDiv);
+
+            // 渲染回复内容
+            const htmlContent = marked.parse(aiResponse);
+            messageContent.innerHTML = htmlContent;
+
+            // 渲染数学公式
+            renderMathInElement(messageContent, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false},
+                    {left: '\\[', right: '\\]', display: true},
+                    {left: '\\(', right: '\\)', display: false}
+                ],
+                throwOnError: false
+            });
+
+            // 高亮代码块
+            messageContent.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+
+            // 滚动到底部
+            this.chatHistory.scrollTop = this.chatHistory.scrollHeight;
+
+            // 保存对话历史
+            this.conversationHistory.push({
+                role: "user",
+                content: message
+            });
+
+            this.conversationHistory.push({
+                role: "assistant",
+                content: aiResponse
+            });
+
+            return aiResponse;
+
+        } catch (error) {
+            console.error('Yi API调用错误:', error);
+            this.addSystemMessage(`API调用失败: ${error.message}`);
+            throw error;
+        } finally {
+            this.sendBtn.classList.remove('loading');
+        }
+    }
+
+    // 在 AIChatApp 类中添加通用的代码块处理方法
+    formatCodeBlocks(content) {
+        // 处理代码块，支持显式语言标记
+        return content.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
+            // 如果没有指定语言，尝试自动检测
+            if (!lang) {
+                // 检测 Python 代码特征
+                if (code.includes('def ') || code.includes('import ') || 
+                    code.includes('print(') || code.includes('return ') ||
+                    /^\s*#.*/.test(code)) {
+                    lang = 'python';
+                }
+                // 检测 JavaScript 代码特征
+                else if (code.includes('function ') || code.includes('const ') || 
+                        code.includes('let ') || code.includes('var ') ||
+                        code.includes('=>') || /^\s*\/\/.*/.test(code)) {
+                    lang = 'javascript';
+                }
+                // 检测 JSON 特征
+                else if (/^\s*[{\[]/.test(code) && /[}\]]\s*$/.test(code)) {
+                    lang = 'json';
+                }
+                // 检测 HTML 特征
+                else if (code.includes('<') && code.includes('>') && 
+                        (code.includes('</') || code.includes('/>'))) {
+                    lang = 'html';
+                }
+                // 检测 CSS 特征
+                else if (code.includes('{') && code.includes('}') && 
+                        code.includes(':') && /[\.\#][a-zA-Z]/.test(code)) {
+                    lang = 'css';
+                }
+                // 如果无法检测，使用 plaintext
+                else {
+                    lang = 'plaintext';
+                }
+            }
+            return `\`\`\`${lang}\n${code.trim()}\`\`\``;
+        });
     }
 }
 

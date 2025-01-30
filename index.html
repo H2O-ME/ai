@@ -43,6 +43,8 @@
                     <button class="model-btn" data-model="sd">Stable Diffusion</button>
                     <button class="model-btn" data-model="video">CogVideoX</button>
                     <button class="model-btn" data-model="deepseek">DeepSeek</button>
+                    <button class="model-btn" data-model="marco">Marco-o1</button>
+                    <button class="model-btn" data-model="yi">Yi</button>
                 </div>
                 <div class="gpt-model-selector" style="display: none;">
                     <select id="gptModelSelect">
@@ -75,22 +77,9 @@
                     </select>
                 </div>
                 <div class="sd-model-selector" style="display: none;">
-                    <div class="model-dropdown">
-                        <div class="selected-model">
-                            <span>Stable Diffusion v2.1</span>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                        <div class="model-options">
-                            <div class="model-option" data-value="stabilityai/stable-diffusion-2-1">
-                                Stable Diffusion v2.1
-                                <span class="model-tag">图生图</span>
-                            </div>
-                            <div class="model-option" data-value="stabilityai/stable-diffusion-3-5-large">
-                                Stable Diffusion v3.5
-                                <span class="model-tag">仅生图</span>
-                            </div>
-                        </div>
-                    </div>
+                    <select id="sdModelSelect">
+                        <option value="stabilityai/stable-diffusion-3-5-large">Stable Diffusion v3.5</option>
+                    </select>
                 </div>
                 <div class="video-model-selector" style="display: none;">
                     <select id="videoModelSelect">
@@ -100,6 +89,16 @@
                 <div class="deepseek-model-selector" style="display: none;">
                     <select id="deepseekModelSelect">
                         <option value="deepseek">DeepSeek Chat</option>
+                    </select>
+                </div>
+                <div class="marco-model-selector" style="display: none;">
+                    <select id="marcoModelSelect">
+                        <option value="AIDC-AI/Marco-o1">Marco-o1</option>
+                    </select>
+                </div>
+                <div class="yi-model-selector" style="display: none;">
+                    <select id="yiModelSelect">
+                        <option value="01-ai/Yi-1.5-9B-Chat-16K">Yi-1.5-9B-Chat-16K</option>
                     </select>
                 </div>
             </div>
