@@ -45,17 +45,19 @@
                     <button class="model-btn" data-model="deepseek">DeepSeek</button>
                     <button class="model-btn" data-model="marco">Marco-o1</button>
                     <button class="model-btn" data-model="yi">Yi</button>
+                    <button class="model-btn" data-model="internlm">InternLM2</button>
                 </div>
                 <div class="gpt-model-selector" style="display: none;">
                     <select id="gptModelSelect">
                         <optgroup label="GPT-4">
-                            <option value="gpt-4o-mini-2024-07-18">GPT-4 Mini (最新)</option>
+                            <option value="gpt-4">GPT-4</option>
+                            <option value="gpt-4o-mini-2024-07-18">GPT-4 Mini-2024-07-18</option>
                             <option value="gpt-4o-mini">GPT-4 Mini</option>
                         </optgroup>
                         <optgroup label="GPT-3.5">
-                            <option value="gpt-3.5-turbo-1106">GPT-3.5 Turbo (最新)</option>
-                            <option value="gpt-3.5-turbo-0613">GPT-3.5 Turbo (0613)</option>
-                            <option value="gpt-3.5-turbo-0301">GPT-3.5 Turbo (0301)</option>
+                            <option value="gpt-3.5-turbo-1106">GPT-3.5 Turbo</option>
+                            <option value="gpt-3.5-turbo-0613">GPT-3.5 Turbo-0613</option>
+                            <option value="gpt-3.5-turbo-0301">GPT-3.5 Turbo-0301</option>
                             <option value="gpt-3.5">GPT-3.5</option>
                         </optgroup>
                     </select>
@@ -99,6 +101,11 @@
                 <div class="yi-model-selector" style="display: none;">
                     <select id="yiModelSelect">
                         <option value="01-ai/Yi-1.5-9B-Chat-16K">Yi-1.5-9B-Chat-16K</option>
+                    </select>
+                </div>
+                <div class="internlm-model-selector" style="display: none;">
+                    <select id="internlmModelSelect">
+                        <option value="internlm/internlm2_5-7b-chat">InternLM2-Chat-7B</option>
                     </select>
                 </div>
             </div>

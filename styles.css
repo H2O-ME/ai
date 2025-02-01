@@ -1233,12 +1233,16 @@ code {
     background-color: #7b66ff;  /* 智谱AI 的品牌色 */
 }
 
+.model-tag.qwen {
+    background-color: #ff666b;  /*qwen 的品牌色 */
+}
+
 .model-tag.flux {
     background-color: #7b66ff;  /* FLUX 的品牌色 */
 }
 
 .model-tag.video {
-    background-color: #ff6b6b;  /* 视频模型的品牌色 */
+    background-color: #ff6b70;  /* 视频模型的品牌色 */
 }
 
 /* SD 模型标签样式 */
@@ -2554,4 +2558,59 @@ textarea:focus {
     padding: 8px;
     background-color: #fff;
     border: 3px solid #FF4081;
+}
+
+/* InternLM 模型选择器样式 */
+.internlm-model-selector {
+    margin-left: 20px;
+    position: relative;
+    display: none;
+}
+
+.internlm-model-selector select {
+    min-width: 200px;
+    padding: 8px 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    background-color: #fff;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 32px;
+}
+
+.internlm-model-selector::after {
+    content: '▼';
+    font-size: 12px;
+    color: #666;
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+/* InternLM 标签样式 */
+.model-tag.internlm {
+    background-color: #4A90E2;
+}
+
+/* InternLM 头像特定样式 */
+.avatar img[src*="InternLM.svg"] {
+    padding: 4px;
+    background-color: #fff;
+    border: 2px solid #4A90E2;
+}
+
+.welcome-section .ai-avatar img[src*="InternLM.svg"] {
+    padding: 8px;
+    background-color: #fff;
+    border: 3px solid #4A90E2;
+}
+
+/* 当选择 InternLM 模型时显示模型选择器 */
+.model-btn[data-model="internlm"].active ~ .internlm-model-selector {
+    display: block;
 }

@@ -10,6 +10,7 @@ class AIChatApp {
             video: new Map(),  // 添加视频模型的历史记录
             marco: new Map(),
             yi: new Map(),
+            internlm: new Map(),
         };
         
         // 初始化 GPT 配置
@@ -18,6 +19,16 @@ class AIChatApp {
             baseUrl: 'https://api.chatanywhere.tech/v1/chat/completions',
             model: 'gpt-3.5-turbo-1106',
             models: {
+                'gpt-4': {
+                    name: 'GPT-4',
+                    maxTokens: 8192,
+                    supportImage: false
+                },
+                'gpt-4o': {
+                    name: 'GPT-4 Turbo',
+                    maxTokens: 128000,
+                    supportImage: false
+                },
                 'gpt-4o-mini-2024-07-18': {
                     name: 'GPT-4 Mini (最新)',
                     maxTokens: 8192,
@@ -136,7 +147,8 @@ class AIChatApp {
                 video: 'https://sf-maas-uat-prod.oss-cn-shanghai.aliyuncs.com/Model_LOGO/Lightricks.png',  // 添加 LTX-Video 头像
                 deepseek: 'https://www.deepseek.com/favicon.ico',  // DeepSeek的图标
                 marco: 'https://sf-maas-uat-prod.oss-cn-shanghai.aliyuncs.com/Model_LOGO/AIDC_AI.png',
-                yi: 'https://sf-maas-uat-prod.oss-cn-shanghai.aliyuncs.com/Model_LOGO/Yi.svg'
+                yi: 'https://sf-maas-uat-prod.oss-cn-shanghai.aliyuncs.com/Model_LOGO/Yi.svg',
+                internlm: 'https://sf-maas-uat-prod.oss-cn-shanghai.aliyuncs.com/Model_LOGO/internlm.svg'
             },
             user: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzY2NjY2NiIgZD0iTTEyIDJhMTAgMTAgMCAxIDAgMTAgMTBBMTAgMTAgMCAwIDAgMTIgMnptMCA1YTMgMyAwIDEgMSAwIDYgMyAzIDAgMCAxIDAtNnptMCAxM2E4LjAxIDguMDEgMCAwIDEtNi0yLjczVjE2YTMgMyAwIDAgMSAzLTNoNmEzIDMyIDAgMCAxIDMgM3YxLjI3YTguMDEgOC4wMSAwIDAgMS02IDIuNzN6Ii8+PC9zdmc+',
             system: 'https://chatglm.cn/img/logo-collapse.d00ef130.svg'
@@ -159,6 +171,16 @@ class AIChatApp {
             baseUrl: 'https://api.chatanywhere.tech/v1/chat/completions',
             model: 'gpt-3.5-turbo-1106',
             models: {
+                'gpt-4': {
+                    name: 'GPT-4',
+                    maxTokens: 8192,
+                    supportImage: false
+                },
+                'gpt-4o': {
+                    name: 'GPT-4 Turbo',
+                    maxTokens: 128000,
+                    supportImage: false
+                },
                 'gpt-4o-mini-2024-07-18': {
                     name: 'GPT-4 Mini (最新)',
                     maxTokens: 8192,
@@ -274,11 +296,10 @@ class AIChatApp {
                 'cogvideox-flash': {
                     name: 'CogVideoX-Flash',
                     supportVideoGen: true,
-                    supportImageToVideo: true,
-                    maxDuration: 10,     // 更新为最高支持10秒
-                    maxFps: 60,         // 更新为最高支持60fps
+                    maxDuration: 10,
+                    maxFps: 60,
                     defaultFps: 30,
-                    supportedSizes: [    // 添加支持的分辨率选项
+                    supportedSizes: [
                         '720x480',
                         '1024x1024',
                         '1280x960',
@@ -286,7 +307,7 @@ class AIChatApp {
                         '1920x1080',
                         '1080x1920',
                         '2048x1080',
-                        '3840x2160'     // 支持4K分辨率
+                        '3840x2160'
                     ]
                 }
             }
@@ -331,6 +352,21 @@ class AIChatApp {
                 '01-ai/Yi-1.5-9B-Chat-16K': {
                     name: 'Yi-1.5-9B-Chat-16K',
                     maxTokens: 16384,
+                    supportImage: false,
+                    supportMultiLingual: true
+                }
+            }
+        };
+
+        // 添加 InternLM 配置
+        this.internlmConfig = {
+            apiKey: 'sk-hyeudoewxhrzksdcsfbyzkprbocvedmdhydzzmmpuohxxphs',
+            baseUrl: 'https://api.siliconflow.cn/v1/chat/completions',
+            model: 'internlm/internlm2_5-7b-chat',
+            models: {
+                'internlm/internlm2_5-7b-chat': {
+                    name: 'InternLM2-Chat-7B',
+                    maxTokens: 8192,
                     supportImage: false,
                     supportMultiLingual: true
                 }
@@ -400,7 +436,7 @@ class AIChatApp {
                     <img src="${this.avatars.ai[this.currentModel]}" alt="GPT头像">
                 </div>
                 <h2>ChatGPT</h2>
-                <p>基于 OpenAI GPT 系列模型，支持多种任务处理</p>
+                <p>ChatGPT（Chat Generative Pre-trained Transformer），基于GPT系统大模型构建</p>
                 <div class="model-features">
                     <span><i class="fas fa-brain"></i> 通用对话</span>
                     <span><i class="fas fa-code"></i> 代码编程</span>
@@ -420,7 +456,7 @@ class AIChatApp {
                     <img src="${this.avatars.ai[this.currentModel]}" alt="智谱AI头像">
                 </div>
                 <h2>智谱 AI</h2>
-                <p>基于清华 ChatGLM 系列模型，支持中英双语对话和多模态理解</p>
+                <p>在多项基准测试中，GLM-4展现了优秀的性能，在语义、数学、推理、代码和知识等多个方面表现出色。</p>
                 <div class="model-features">
                     <span><i class="fas fa-comments"></i> 中英对话</span>
                     <span><i class="fas fa-image"></i> 图像理解</span>
@@ -440,9 +476,9 @@ class AIChatApp {
                     <img src="${this.avatars.ai[this.currentModel]}" alt="通义千问头像">
                 </div>
                 <h2>通义千问</h2>
-                <p>阿里云 Qwen 系列模型，擅长中文理解和多领域知识</p>
+                <p>Qwen2.5-Coder-7B-Instruct在保持数学和通用能力优势的同时，强化了代码能力。</p>
                 <div class="model-features">
-                    <span><i class="fas fa-language"></i> 中文优化</span>
+                    <span><i class="fas fa-code"></i> 代码编程</span>
                     <span><i class="fas fa-database"></i> 知识库</span>
                     <span><i class="fas fa-chart-line"></i> 数据分析</span>
                     <span><i class="fas fa-robot"></i> 智能助手</span>
@@ -460,7 +496,7 @@ class AIChatApp {
                     <img src="${this.avatars.ai[this.currentModel]}" alt="FLUX头像">
                 </div>
                 <h2>FLUX 图像生成模型</h2>
-                <p>FLUX.1-schnell 是一个 120 亿参数的 Rectified Flow Transformer 模型，能够根据文本描述生成图像</p>
+                <p>FLUX.1-schnell 是一个 120 亿参数的 Rectified Flow Transformer 模型，该模型采用潜在对抗扩散蒸馏技术训练，具有最先进的输出质量和具有竞争力的提示跟随能力</p>
                 <div class="suggestion-grid">
                     <button class="suggestion-btn">一只可爱的猫咪</button>
                     <button class="suggestion-btn">日落时分的海滩</button>
@@ -474,7 +510,7 @@ class AIChatApp {
                     <img src="${this.avatars.ai[this.currentModel]}" alt="Stable Diffusion头像">
                 </div>
                 <h2>Stable Diffusion 图像生成模型</h2>
-                <p>Stable Diffusion v3.5 是一个专注于高质量文本到图像生成的扩散模型</p>
+                <p>Stable Diffusion v3.5 是一个专注于高质量文本到图像生成的扩散模型，该模型在 10 亿张图像上进行了预训练，并在 3000 万张高质量美学图像和 300 万张偏好数据图像上进行了微调。</p>
                 <div class="suggestion-grid">
                     <button class="suggestion-btn">一只在月光下奔跑的狼</button>
                     <button class="suggestion-btn">科幻风格的未来城市</button>
@@ -502,7 +538,7 @@ class AIChatApp {
                     <img src="${this.avatars.ai[this.currentModel]}" alt="CogVideoX头像">
                 </div>
                 <h2>CogVideoX-Flash 视频生成模型</h2>
-                <p>CogVideoX-Flash 是智谱AI开发的快速视频生成模型，支持4K高清视频生成，最高支持10秒视频长度和60fps帧率，并可生成AI音效</p>
+                <p>CogVideoX-Flash 是智谱AI开发的快速视频生成模型，继承CogVideoX自研的端到端视频理解模型，具备强大的视频生成能力。</p>
                 <div class="suggestion-grid">
                     <button class="suggestion-btn">一只猫咪在玩毛线球</button>
                     <button class="suggestion-btn">日落时分的海浪</button>
@@ -511,7 +547,7 @@ class AIChatApp {
                 </div>
                 <div class="img2video-hint">
                     <i class="fas fa-film"></i>
-                    <span>图片转视频功能：支持4K分辨率，10秒视频长度，60fps高帧率</span>
+                    <span></span>
                 </div>
             `;
         } else if (this.currentModel === 'deepseek') {
@@ -519,13 +555,13 @@ class AIChatApp {
                 <div class="ai-avatar">
                     <img src="${this.avatars.ai[this.currentModel]}" alt="DeepSeek头像">
                 </div>
-                <h2>DeepSeek AI助手</h2>
-                <p>DeepSeek 探索未至之境</p>
+                <h2>DeepSeek</h2>
+                <p>DeepSeek-V3为自研MoE模型，671B参数，激活37B，在14.8T token上进行了预训练。</p>
                 <div class="suggestion-grid">
-                    <button class="suggestion-btn">你好，请做个自我介绍</button>
-                    <button class="suggestion-btn">帮我写一段代码</button>
-                    <button class="suggestion-btn">解释一个概念</button>
-                    <button class="suggestion-btn">分析一个问题</button>
+                    <button class="suggestion-btn">做个自我介绍</button>
+                    <button class="suggestion-btn">帮我写一段python代码</button>
+                    <button class="suggestion-btn">解释人工智能</button>
+                    <button class="suggestion-btn">生成小红书文案</button>
                 </div>
             `;
         } else if (this.currentModel === 'marco') {
@@ -533,10 +569,10 @@ class AIChatApp {
                 <div class="ai-avatar">
                     <img src="${this.avatars.ai[this.currentModel]}" alt="Marco-o1头像">
                 </div>
-                <h2>Marco-o1 AI助手</h2>
-                <p>Marco-o1 是一个支持多语言交流和结构化输出的AI模型</p>
+                <h2>Marco-o1 推理模型</h2>
+                <p>Marco-o1 是一个推进开放式问题解决的大型推理模型 (LRM)</p>
                 <div class="suggestion-grid">
-                    <button class="suggestion-btn">我写一段代码</button>
+                    <button class="suggestion-btn">写一段python代码</button>
                     <button class="suggestion-btn">生成JSON数据</button>
                     <button class="suggestion-btn">多语言翻译</button>
                     <button class="suggestion-btn">数学计算</button>
@@ -548,12 +584,32 @@ class AIChatApp {
                     <img src="${this.avatars.ai[this.currentModel]}" alt="Yi头像">
                 </div>
                 <h2>Yi-1.5-9B-Chat-16K</h2>
-                <p>Yi 是一个支持多语言交流的大规模语言模型</p>
+                <p>Yi-1.5-9B-Chat在编码、数学、推理和指令遵循能力方面表现强劲</p>
                 <div class="suggestion-grid">
-                    <button class="suggestion-btn">写一段代码</button>
-                    <button class="suggestion-btn">解释一个概念</button>
+                    <button class="suggestion-btn">写一段python代码</button>
+                    <button class="suggestion-btn">解释人工智能</button>
                     <button class="suggestion-btn">多语言翻译</button>
                     <button class="suggestion-btn">数学计算</button>
+                </div>
+            `;
+        } else if (this.currentModel === 'internlm') {
+            welcomeContent = `
+                <div class="ai-avatar">
+                    <img src="${this.avatars.ai[this.currentModel]}" alt="InternLM头像">
+                </div>
+                <h2>书生浦语2.0</h2>
+                <p>InternLM2.5-7B-Chat 是一个开源的对话模型，基于 InternLM2 架构开发</p>
+                <div class="model-features">
+                    <span><i class="fas fa-code"></i> 代码编程</span>
+                    <span><i class="fas fa-calculator"></i> 数学推理</span>
+                    <span><i class="fas fa-brain"></i> 知识问答</span>
+                    <span><i class="fas fa-language"></i> 多语言</span>
+                </div>
+                <div class="suggestion-grid">
+                    <button class="suggestion-btn">写一段python代码</button>
+                    <button class="suggestion-btn">解释人工智能</button>
+                    <button class="suggestion-btn">数学计算</button>
+                    <button class="suggestion-btn">多语言翻译</button>
                 </div>
             `;
         } else {
@@ -564,10 +620,10 @@ class AIChatApp {
                 <h2>大语言模型</h2>
                 <p>选择模型开始对话</p>
                 <div class="suggestion-grid">
-                    <button class="suggestion-btn">你好，请做个自我介绍</button>
-                    <button class="suggestion-btn">帮我写一段代码</button>
-                    <button class="suggestion-btn">解释一个概念</button>
-                    <button class="suggestion-btn">分析一个问题</button>
+                    <button class="suggestion-btn">做个自我介绍</button>
+                    <button class="suggestion-btn">写一段python代码</button>
+                    <button class="suggestion-btn">解释人工智能</button>
+                    <button class="suggestion-btn">多语言翻译</button>
                 </div>
             `;
         }
@@ -1103,33 +1159,37 @@ class AIChatApp {
         const systemPrompts = {
             gpt: {
                 role: "system",
-                content: "你是 OpenAI 开发的 GPT 助手。请持专业、客观的回答，你的回答应该准确、有帮助且符合伦理道德。"
+                content: "你是 OpenAI 开发的 GPT-4系列模型。请持专业、客观的回答，你的回答应该准确、有帮助且符合伦理道德。可以使用markdown格式"
             },
             zhipu: {
                 'glm-4v-flash': {
                     role: "system",
-                    content: "你是智谱AI开发的glm-4v-flash视觉语言模型。你具备图像理解和自然语言交互的能力。请保持专业、客观专注于图像分析和文本理解任务。"
+                    content: "你是智谱AI开发的glm-4v-flash语言模型。你具备自然语言交互的能力。请保持专业、客观专注于文本理解和文本生成任务。可以使用markdown格式"
                 },
                 'THUDM/glm-4-9b-chat': {
                     role: "system",
-                    content: "你是清华大学开发的GLM-4-9B-Chat模型，你是一个专注于文本理解和生成的AI助手。请保持专业的学术风格，提供准确的知识和见解。"
+                    content: "你是智谱AI开发的GLM-4-9B-Chat模型，你是一个专注于文本理解和生成的AI助手。请保持专业的学术风格，提供准确的知识和见解。可以使用markdown格式"
                 }
             },
             qwen: {
                 role: "system",
-                content: "你是阿里的通义千问助手。你支持多语言交流和结构化输出。请保持严谨的专业态度，提供准确、有见地回答。"
+                content: "你是阿里的Qwen2.5-Coder-7B-Instruct模型。你支持多语言交流和结构化输出。请保持严谨的专业态度，提供准确、有见地回答。可以使用markdown格式"
             },
             deepseek: {
                 role: "system",
-                content: "You are a helpful assistant powered by DeepSeek. Please provide accurate and helpful responses while maintaining ethical standards."
+                content: "你的名字是deepseek-v3，请保持专业、客观的回答，可以使用markdown格式"
             },
             marco: {
                 role: "system",
-                content: "当你回答问题时，你的思考应该在<Thought>内完成，<Output>内输出你的结果。<Thought>应该尽可能是中文，但是有2个特例，一个是对原文中的引用，另一个是是数学应该使用markdown格式，<Output>内的输出需要遵循用户输入的语言。"
+                content: "你是阿里云的Marco-o1 推理模型，当你回答问题时，你的思考应该在<Thought>内完成，<Output>内输出你的结果。<Thought>应该尽可能是中文，但是有2个特例，一个是对原文中的引用，另一个是是数学应该使用markdown格式，<Output>内的输出需要遵循用户输入的语言。"
             },
             yi: {
                 role: "system",
-                content: "你是由01.AI开发的Yi大语言模型。请提供准确、专业的回答。"
+                content: "你是Yi语言模型。请提供准确、专业的回答。可以使用markdown格式"
+            },
+            internlm: {
+                role: "system",
+                content: "你是书生浦语2.0（InternLM2）大语言模型。请提供准确、专业的回答。可以使用markdown格式"
             }
         };
 
@@ -1149,6 +1209,8 @@ class AIChatApp {
             return await this.getMarcoResponse(message, systemPrompts.marco);
         } else if (this.currentModel === 'yi') {
             return await this.getYiResponse(message, systemPrompts.yi);
+        } else if (this.currentModel === 'internlm') {
+            return await this.getInternlmResponse(message, systemPrompts.internlm);
         }
     }
 
@@ -1675,6 +1737,7 @@ class AIChatApp {
                     video: new Map(histories.video || []),  // 添加 video
                     marco: new Map(histories.marco || []),
                     yi: new Map(histories.yi || []),
+                    internlm: new Map(histories.internlm || []),
                 };
             }
             this.updateHistoryList();
@@ -1690,6 +1753,7 @@ class AIChatApp {
                 video: new Map(),
                 marco: new Map(),
                 yi: new Map(),
+                internlm: new Map(),
             };
         }
     }
@@ -1698,7 +1762,7 @@ class AIChatApp {
         try {
             // 添加安全检查
             if (!this.chatHistories || !this.chatHistories.gpt || !this.chatHistories.zhipu || 
-                !this.chatHistories.qwen || !this.chatHistories.flux || !this.chatHistories.sd || !this.chatHistories.video || !this.chatHistories.marco || !this.chatHistories.yi) {
+                !this.chatHistories.qwen || !this.chatHistories.flux || !this.chatHistories.sd || !this.chatHistories.video || !this.chatHistories.marco || !this.chatHistories.yi || !this.chatHistories.internlm) {
                 console.error('chatHistories 未正确初始化');
                 // 重新初始化
                 this.chatHistories = {
@@ -1710,6 +1774,7 @@ class AIChatApp {
                     video: new Map(),
                     marco: new Map(),
                     yi: new Map(),
+                    internlm: new Map(),
                 };
             }
 
@@ -1722,6 +1787,7 @@ class AIChatApp {
                 video: Array.from(this.chatHistories.video.entries()),
                 marco: Array.from(this.chatHistories.marco.entries()),
                 yi: Array.from(this.chatHistories.yi.entries()),
+                internlm: Array.from(this.chatHistories.internlm.entries()),
             };
             
             localStorage.setItem('chatHistories', JSON.stringify(historiesData));
@@ -1778,6 +1844,10 @@ class AIChatApp {
             yi: {
                 name: 'Yi',
                 tag: '<span class="model-tag yi">Yi</span>'
+            },
+            internlm: {
+                name: 'InternLM2',
+                tag: '<span class="model-tag internlm">InternLM2</span>'
             }
         };
 
@@ -1810,6 +1880,8 @@ class AIChatApp {
                 modelLabel = modelNames.marco.tag;
             } else if (this.currentModel === 'yi') {
                 modelLabel = modelNames.yi.tag;
+            } else if (this.currentModel === 'internlm') {
+                modelLabel = modelNames.internlm.tag;
             } else {
                 modelLabel = modelNames[this.currentModel] || '';
             }
@@ -2174,115 +2246,18 @@ class AIChatApp {
     }
 
     // 修改 generateVideo 方法，支持图生视频
-    async generateVideo(prompt, imageUrl = null) {
-        if (!prompt) {
-            console.error('未收到提示词');
-            return;
-        }
-
-        this.abortController = new AbortController();
-        let progressInterval;
-        let progressDiv;
-        
+    async generateVideo(prompt) {
         try {
-            // 清空输入框
-            this.userInput.value = '';
-
             this.sendBtn.classList.add('loading');
             
-            // 使用视频模型头像显示生成提示
-            this.addSystemMessage('正在生成视频...', this.avatars.ai[this.currentModel]);
-            
-            // 添加进度条
-            progressDiv = document.createElement('div');
-            progressDiv.className = 'video-generation-progress';
-            progressDiv.style.margin = '10px auto';
-            progressDiv.innerHTML = `
-                <div class="progress-bar">
-                    <div class="progress-fill"></div>
-                </div>
-                <div class="progress-text">0%</div>
-            `;
-            
-            const lastSystemMessage = Array.from(this.chatHistory.children)
-                .filter(el => el.classList.contains('system-message'))
-                .pop();
-            
-            if (lastSystemMessage) {
-                lastSystemMessage.appendChild(progressDiv);
-            }
-
-            // 修改进度条更新逻辑
-            let progress = 0;
-            const progressFill = progressDiv.querySelector('.progress-fill');
-            const progressText = progressDiv.querySelector('.progress-text');
-            
-            progressInterval = setInterval(() => {
-                if (progress < 85) {
-                    // 增加进度增长速度
-                    progress += Math.random() * 3;  // 从1.5增加到3
-                    progress = Math.min(progress, 85);
-                    progressFill.style.width = `${progress}%`;
-                    progressText.textContent = `${Math.round(progress)}%`;
-                }
-            }, 500);  // 从1000ms减少到500ms
-
-            // 优化提示词
-            const enhancedPrompt = await this.optimizePrompt(prompt, 'video');
-            console.log('优化后的提示词:', enhancedPrompt);
-
-            // 如果有图片，先上传到图床
-            let imageLink = null;
-            if (imageUrl) {
-                try {
-                    // 创建FormData对象
-                    const formData = new FormData();
-                    formData.append('key', '672b19ccee439f1b7875f3409fcab0ce');
-                    
-                    // 从base64中提取实际的图片数据
-                    const imageData = imageUrl.split(',')[1];
-                    formData.append('image', imageData);
-
-                    // 发送请求到imgbb
-                    const imgbbResponse = await fetch('https://api.imgbb.com/1/upload', {
-                        method: 'POST',
-                        body: formData
-                    });
-
-                    if (!imgbbResponse.ok) {
-                        throw new Error(`图床服务响应错误: ${imgbbResponse.status}`);
-                    }
-
-                    const imgbbData = await imgbbResponse.json();
-                    if (!imgbbData.success) {
-                        throw new Error('图片上传失败: ' + (imgbbData.error?.message || '未知错误'));
-                    }
-
-                    imageLink = imgbbData.data.url;
-                    console.log('图片已上传到图床:', imageLink);
-                } catch (error) {
-                    console.error('上传图片到图床失败:', error);
-                    this.addSystemMessage('图片上传失败，请重试');
-                    return;
-                }
-            }
-
-            // 修改提交请求体格式
-            const submitBody = {
-                model: "cogvideox-flash",
-                prompt: enhancedPrompt,
-                quality: "quality",      // 使用高质量模式
-                with_audio: true,       // 启用AI音效
-                size: imageUrl ? "3840x2160" : "1920x1080",  // 图生视频时使用4K分辨率
-                duration: imageUrl ? 10 : 5,  // 图生视频时使用10秒
-                fps: 60,                // 使用最高帧率
-                request_id: Date.now().toString()
+            // 构建请求体
+            const requestBody = {
+                model: this.videoConfig.model,
+                prompt: prompt,
+                size: '1024x1024',  // 默认尺寸
+                fps: this.videoConfig.models[this.videoConfig.model].defaultFps,
+                duration: 3,  // 默认时长
             };
-
-            // 如果有图片链接，添加到请求体
-            if (imageLink) {
-                submitBody.image_url = imageLink;
-            }
 
             // 发送请求
             const submitResponse = await fetch(this.videoConfig.submitUrl, {
@@ -2291,7 +2266,7 @@ class AIChatApp {
                     'Authorization': `Bearer ${this.videoConfig.apiKey}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(submitBody)
+                body: JSON.stringify(requestBody)
             });
 
             if (!submitResponse.ok) {
@@ -2379,18 +2354,7 @@ class AIChatApp {
             console.error('视频生成错误:', error);
             this.addSystemMessage(`视频生成失败: ${error.message}`);
         } finally {
-            // 确保清理所有状态
-            if (progressInterval) {
-                clearInterval(progressInterval);
-            }
-            if (progressDiv && progressDiv.parentNode) {
-                progressDiv.remove();
-            }
             this.sendBtn.classList.remove('loading');
-            this.currentRequest = null;
-            if (this.abortController) {
-                this.abortController = null;
-            }
         }
     }
 
@@ -2935,8 +2899,6 @@ class AIChatApp {
 
             const data = await response.json();
             let aiResponse = data.choices[0].message.content;
-            // 处理代码块
-            aiResponse = this.formatCodeBlocks(aiResponse);
 
             // 创建消息元素
             const messageDiv = document.createElement('div');
@@ -2958,8 +2920,19 @@ class AIChatApp {
             messageDiv.appendChild(messageContent);
             this.chatHistory.appendChild(messageDiv);
 
-            // 渲染回复内容
-            const htmlContent = marked.parse(aiResponse);
+            // 修改 marked 配置以支持语言标识
+            const renderer = new marked.Renderer();
+            renderer.code = (code, language) => {
+                const validLanguage = hljs.getLanguage(language) ? language : '';
+                const highlighted = validLanguage ? 
+                    hljs.highlight(code, { language: validLanguage }).value : 
+                    hljs.highlightAuto(code).value;
+                
+                return `<pre><code class="hljs language-${validLanguage}">${highlighted}</code></pre>`;
+            };
+
+            // 使用配置的 renderer 渲染回复内容
+            const htmlContent = marked.parse(aiResponse, { renderer });
             messageContent.innerHTML = htmlContent;
 
             // 渲染数学公式
@@ -3042,6 +3015,127 @@ class AIChatApp {
             }
             return `\`\`\`${lang}\n${code.trim()}\`\`\``;
         });
+    }
+
+    // 添加 InternLM 响应处理方法
+    async getInternlmResponse(message, systemPrompt) {
+        try {
+            this.sendBtn.classList.add('loading');
+
+            // 构建请求消息
+            let messages = [systemPrompt];
+
+            // 添加历史对话
+            if (this.conversationHistory.length > 0) {
+                messages = messages.concat(this.conversationHistory.slice(-10));
+            }
+
+            // 添加当前消息
+            messages.push({
+                role: "user",
+                content: message
+            });
+
+            // 发送请求
+            const response = await fetch(this.internlmConfig.baseUrl, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.internlmConfig.apiKey}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    model: this.internlmConfig.model,
+                    messages: messages,
+                    temperature: 0.7,
+                    max_tokens: 2000,
+                    stream: false,
+                    top_p: 0.95,
+                    frequency_penalty: 0,
+                    presence_penalty: 0
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            let aiResponse = data.choices[0].message.content;
+
+            // 创建消息元素
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', 'ai-message');
+            
+            // 添加头像
+            const avatar = document.createElement('div');
+            avatar.className = 'avatar';
+            const avatarImg = document.createElement('img');
+            avatarImg.src = this.avatars.ai[this.currentModel];
+            avatarImg.alt = 'AI avatar';
+            avatar.appendChild(avatarImg);
+            messageDiv.appendChild(avatar);
+
+            // 添加消息内容
+            const messageContent = document.createElement('div');
+            messageContent.classList.add('message-content');
+            messageContent.innerHTML = '<div class="loading">正在思考...</div>';
+            messageDiv.appendChild(messageContent);
+            this.chatHistory.appendChild(messageDiv);
+
+            // 修改 marked 配置以支持语言标识
+            const renderer = new marked.Renderer();
+            renderer.code = (code, language) => {
+                const validLanguage = hljs.getLanguage(language) ? language : '';
+                const highlighted = validLanguage ? 
+                    hljs.highlight(code, { language: validLanguage }).value : 
+                    hljs.highlightAuto(code).value;
+                
+                return `<pre><code class="hljs language-${validLanguage}">${highlighted}</code></pre>`;
+            };
+
+            // 使用配置的 renderer 渲染回复内容
+            const htmlContent = marked.parse(aiResponse, { renderer });
+            messageContent.innerHTML = htmlContent;
+
+            // 渲染数学公式
+            renderMathInElement(messageContent, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false},
+                    {left: '\\[', right: '\\]', display: true},
+                    {left: '\\(', right: '\\)', display: false}
+                ],
+                throwOnError: false
+            });
+
+            // 高亮代码块
+            messageContent.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+
+            // 滚动到底部
+            this.chatHistory.scrollTop = this.chatHistory.scrollHeight;
+
+            // 保存对话历史
+            this.conversationHistory.push({
+                role: "user",
+                content: message
+            });
+
+            this.conversationHistory.push({
+                role: "assistant",
+                content: aiResponse
+            });
+
+            return aiResponse;
+
+        } catch (error) {
+            console.error('InternLM API调用错误:', error);
+            this.addSystemMessage(`API调用失败: ${error.message}`);
+            throw error;
+        } finally {
+            this.sendBtn.classList.remove('loading');
+        }
     }
 }
 
